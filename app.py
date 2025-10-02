@@ -210,11 +210,8 @@ def load_css():
 # Get API key
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", st.secrets.get("GEMINI_API_KEY", ""))
 
-# Configure Gemini API
-genai.configure(api_key=GEMINI_API_KEY)
-
-# Model configuration - Similar to your FundTransactionExtractor
-MODEL_NAME = "gemini-2.0-flash-exp"  # Using latest Flash model
+# Model configuration
+MODEL_NAME = "gemini-2.0-flash-exp"
 
 # Safety settings
 SAFETY_SETTINGS = [
@@ -224,12 +221,12 @@ SAFETY_SETTINGS = [
     {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
 ]
 
-# Generation config - Low temperature for factual responses
+# Generation config
 GENERATION_CONFIG = {
-    "temperature": 0.1,  # Very low for factual, consistent answers
+    "temperature": 0.1,
     "top_p": 0.8,
     "top_k": 20,
-    "max_output_tokens": 4096,  # Enough for detailed responses
+    "max_output_tokens": 4096,
 }
 
 # Initialize the model
@@ -237,6 +234,12 @@ GENERATION_CONFIG = {
 def initialize_model():
     """Initialize Gemini model with caching for better performance"""
     try:
+        if not GEMINI_API_KEY:
+            st.error("⚠️ GEMINI_API_KEY not found. Please set it in your environment or secrets.")
+            return None
+            
+        genai.configure(api_key=GEMINI_API_KEY)
+        
         model = genai.GenerativeModel(
             model_name=MODEL_NAME,
             generation_config=GENERATION_CONFIG,
@@ -244,7 +247,7 @@ def initialize_model():
         )
         return model
     except Exception as e:
-        st.error(f"Failed to initialize model: {e}")
+        st.error(f"❌ Failed to initialize model: {e}")
         return None
 
 # User credentials - CHANGE THESE FOR PRODUCTION
@@ -482,7 +485,7 @@ Answer: The three holding companies, namely Wellchamp Investments Limited, Wellc
 ### Record Keeping
 
 **Question: Do you have the ability to maintain books and records on behalf of Sofi Invest in compliance with Exchange Act Rules 17a-3 and 17a-4, as well as FINRA Rule 3110(b)(4) and FINRA Rule Series 4510 or other applicable laws, rules and regulations?**
-Answer: Hong Kong's SFC recordkeeping rules under the SFO, Keeping of Records Rules, and Code of Conduct serve a similar purpose to the U.S. rules — ensuring licensed corporations keep accurate, accessible, and supervisory‑compliant books and records.
+Answer: Hong Kong's SFC recordkeeping rules under the SFO, Keeping of Records Rules, and Code of Conduct serve a similar purpose to the U.S. rules -- ensuring licensed corporations keep accurate, accessible, and supervisory‑compliant books and records.
 
 ---
 
@@ -513,7 +516,22 @@ Answer: Hong Kong's SFC recordkeeping rules under the SFO, Keeping of Records Ru
 **Brief background profile:**
 WMC is a SFC licensed corporation (CE No. BEC913) in Hong Kong Established in 2014. We are providing B2B & B2B2C Fund Investment Dealing & Settlement services and Insurance Admin & CRM solutions. Our principal activity of the Company is the provision of platform servicing for financial institutions. Our clients are mainly Financial Advisory firms (FAs) which make use of our platform in the dealing of investment products for their end-investors. We have around 18 staffs now.
 
-[... REST OF YOUR KNOWLEDGE BASE - KEEP THE FULL CONTENT FROM PREVIOUS VERSION ...]
+### SFC Associated Entity Information
+
+**Question: What is an associated entity under SFC regulations?**
+Answer: Under Section 165(3) of the Securities and Futures Ordinance, an associated entity of an intermediary (other than an authorized financial institution) cannot conduct any business other than receiving or holding client assets, whether on behalf of an intermediary or otherwise, unless authorized in writing by the SFC.
+
+**Question: If an associated entity is also a licensed corporation, does it require written authorization from the SFC?**
+Answer: If the licensed corporation notifies the SFC that it has become an associated entity of another intermediary, there is no need to seek additional authorization under Section 165(3). It may continue to carry out its regulated activity(ies) as a licensed corporation.
+
+**Question: Can entities in the same group make a single notification for changes?**
+Answer: Yes. For entities belonging to the same group of companies, a licensed corporation (or registered institution) may make a notification required under the Associated Entities - Notice Rules on its behalf and on behalf of other group entities in respect of the same change in information. The notification should clearly state on whose behalf it is made, and the represented entities should be aware of the notification.
+
+**Question: Can a licensed corporation that is also an associated entity make a single notification under both rules?**
+Answer: Yes. Where the licensed corporation (or registered institution) is also an associated entity, a single notification for the same change in information is acceptable provided that the capacities under which the notification is made is clearly stated.
+
+**Question: Can a licensed corporation that is also an associated entity make a single submission of financial statements?**
+Answer: Yes. A single submission by a licensed corporation that is also an associated entity is acceptable provided that the submission complies with the requirements under the Accounts and Audit Rules for a licensed corporation and states the capacities of the corporation.
 """
 
 # ============================================================================
@@ -550,7 +568,6 @@ def save_conversation_log(username, question, answer):
 def get_gemini_response(question):
     """
     Get response from Gemini API with STRICT anti-hallucination measures
-    Using the same structure as FundTransactionExtractor
     """
     try:
         # Get the cached model
@@ -582,23 +599,29 @@ def get_gemini_response(question):
 (Answer based ONLY on the KNOWLEDGE BASE above. If the information is not found, use the "I don't have that information" template provided in rule 3.)
 """
         
-        # Generate response with timeout (similar to FundTransactionExtractor)
-        response = model.generate_content(
-            prompt,
-            request_options={"timeout": 180}
-        )
+        # Generate response with proper error handling
+        response = model.generate_content(prompt)
         
         # Check if response was blocked
-        if response.prompt_feedback and response.prompt_feedback.block_reason:
-            return f"⚠️ Response was blocked due to: {response.prompt_feedback.block_reason}. Please rephrase your question."
+        if not response or not response.parts:
+            if hasattr(response, 'prompt_feedback') and response.prompt_feedback:
+                block_reason = getattr(response.prompt_feedback, 'block_reason', 'Unknown reason')
+                return f"⚠️ Response was blocked: {block_reason}. Please rephrase your question."
+            return "⚠️ No response generated. Please try again or contact Peter Lau at peterlau@wmcubehk.com or +852 3854 6419."
         
-        return response.text
+        # Extract text from response
+        answer = response.text if hasattr(response, 'text') else str(response)
+        return answer
         
     except Exception as e:
         error_msg = str(e)
         if "timeout" in error_msg.lower():
             return "⏱️ Request timed out. Please try again or contact Peter Lau at peterlau@wmcubehk.com or +852 3854 6419."
-        return f"❌ Error generating response: {error_msg}\n\nPlease contact our Compliance Officer, Peter Lau, at peterlau@wmcubehk.com or +852 3854 6419."
+        elif "API key" in error_msg or "api_key" in error_msg.lower():
+            return "❌ API key error. Please check your Gemini API configuration."
+        elif "quota" in error_msg.lower() or "limit" in error_msg.lower():
+            return "❌ API quota exceeded. Please try again later or contact support."
+        return f"❌ Error: {error_msg}\n\nPlease contact our Compliance Officer, Peter Lau, at peterlau@wmcubehk.com or +852 3854 6419."
 
 # ============================================================================
 # UI PAGES
