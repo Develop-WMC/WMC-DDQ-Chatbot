@@ -455,6 +455,11 @@ Answer: There are no material changes in the performance of these controls. Our 
 
 No lapses have been identified in relation to services rendered in any of these areas. Our monitoring systems have not detected any security incidents or compliance violations.
 
+### Compliance Monitoring Program
+
+**Question: Please confirm that the Company has established, implemented and maintain a compliance monitoring program, i.e. how does it ensure that your Compliance manual is followed by all of its employees.**
+Answer: All employees are required to attend Compliance Training Sessions held by Management to ensure that they understand the legal and compliance issues involved related to their positions, and the standards and practices expected of them by the Company and the Hong Kong Securities and Futures Commission. All staffs are tested on the materials of the Compliance Manual to ensure competence. Controls are set up to govern all essential procedures with strict observation of compliance requirements, and all Management are required to ensure the established control and policies are executed with prudence by all staffs.
+
 ### Cybersecurity
 
 **Question: Has cybersecurity training been provided to staff? What is the frequency of such training? When was the last training held and what did it cover?**
@@ -845,3 +850,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
