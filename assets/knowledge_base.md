@@ -1,46 +1,83 @@
-# WMC Due Diligence Knowledge Base - Complete Information
+# WMC Due Diligence Knowledge Base - Consolidated (MASTER)
 
-## DOCUMENT 1: Frequently Asked Questions - Due Diligence on WMC
-Last update: 22nd September 2025
+## DOCUMENT 1: Company Information & Policies
 
-### Internal Controls & Audit
+### Basic Information
+
+**Question: Legal Name of the Company (including any other business names used, if applicable)**
+Answer: Wealth Management Cube Limited (WMC)
+
+**Question: Address**
+Answer: 804A2, 8/F, World Wide House, 19 Des Voeux Road Central, Central, Hong Kong
+
+**Question: Company Registration No.**
+Answer: CI No.: 2116198
+
+**Question: Date of incorporation**
+Answer: 04 JULY 2014
+
+**Question: Company ownership chart, including ultimate beneficial owners (more than 20% of the shares) and their respective percentage of shares held.**
+Answer: Will provide upon request.
+
+**Question: Company’s insurance coverage.**
+Answer: We have Professional Indemnity insurance from Chubb Elite Financial Institutions Civil Liability Insurance, with an amount insured of HKD 7,500,000.
+
+**Question: Please provide the contact details of the Compliance Officer.**
+Answer: Lau Hiu Fung Peter, Tel: 852 3854 6419, Email: peterlau@wmcubehk.com
+
+**Question: Brief background profile including date of establishment, number of years in business, number of staff, types of clientele etc.**
+Answer: WMC is a SFC licensed corporation (CE No. BEC913) in Hong Kong Established in 2014. We are providing B2B & B2B2C Fund Investment Dealing & Settlement services and Insurance Admin & CRM solutions. Our principal activity of the Company is the provision of platform servicing for financial institutions. Our clients are mainly Financial Advisory firms (FAs) which make use of our platform in the dealing of investment products for their end-investors. We have around 18-20 staffs now.
+
+**Question: total headcount of the Company.**
+Answer: 18-20 ppl
+
+**Question: staff turnover rate.**
+Answer: average annual turnover rate is around 10 – 20%.
+
+**Question: Please advise whether there has been any major change in senior management over the past 3 years?**
+Answer: Ng Sai Tong became the executive director of Wealth Management Cube Limited in 2022.
+
+**Question: changes in key staff over the last 12 months the Company has had.**
+Answer: 
+- Henry Mui joined the Company as Responsible Officer and AVP Business and Product Development in Jan 2022.
+- Zip Lee was promoted to VP Business and Product Development in Apr 2022. She is also a Responsible Officer of the Company.
+- Jason Hui, CEO and Responsible Officer, resigned in May 2022.
+- Thomas Ng, Executive Director & Responsible Officer, joined in July 2022.
+- Zip Lee, VP and Responsible Officer, left in April 2023.
+- Peter Lau, Responsible Officer, joined in April 2023.
+
+### Compliance, Audit & Risk
 
 **Question: Does your Company have any legal, regulatory or internal control procedures to ensure confidentiality of information about clients, handle conflicts of interests with clients, or implement the code of ethics?**
-Answer: Yes, we have legal, regulatory or internal control procedures to ensure confidentiality of information about clients, handle conflicts of interests with clients, and implement the code of ethics.
+Answer: Yes, we have legal, regulatory or internal control procedures for these purposes.
+
+**Question: Please confirm that the Company has established, implemented and maintain a compliance monitoring program, i.e. how does it ensure that your Compliance manual is followed by all of its employees.**
+Answer: All employees are required to attend Compliance Training Sessions held by Management to ensure that they understand the legal and compliance issues involved related to their positions, and the standards and practices expected of them by the Company and the Hong Kong Securities and Futures Commission. All staffs are tested on the materials of the Compliance Manual to ensure competence. Controls are set up to govern all essential procedures with strict observation of compliance requirements, and all Management are required to ensure the established control and policies are executed with prudence by all staffs.
+
+**Question: How often is the Compliance Manual reviewed/audited?**
+Answer: The Compliance manual is reviewed periodically as new practices and regulations are enacted by governing authorities in Hong Kong and worldwide.
+
+**Question: What is the scope and frequency of the Company’s compliance review function?**
+Answer: Our compliance review function covers all areas of our business as a fund platform. This would span all essential areas from the execution of orders, handling of clients’ assets, anti-money laundering and know-your-client requirements, code of conduct, staff dealing policies, sales practices, due diligence on products, providers, clients and sub-distributors, third-party service providers, internal control, to our IT infrastructure and security. All areas are constantly reviewed upon the addition or renewal of standards and practices as updated circulars, regulations, or guidelines are published.
 
 **Question: Does your Company have an internal audit function or other independent third party that assesses your internal control policies and practices on a regular basis?**
-Answer: We do not have internal audit. But we have external audit to review our policies and practices. The frequency of review is annually. The last review was conducted in April 2024.
+Answer: We do not have an internal audit function. However, we have an external audit to review our policies and practices annually. The last review was conducted in April 2024 by D & Partners CPA Limited. There were no material findings.
 
-**Question: Any material finding in the last external audit?**
-Answer: No
+**Question: Please provide the contact details of the Internal Audit Officer.**
+Answer: While we do not have an internal audit department, our Senior Management periodically assess our policies and practices in all critical areas of our operations. Our Internal Control effort is addressed in Management and Supervision, Segregation of Duties and Functions, Compliance (led by the Responsible Officer), and our Contingency Plan.
 
-**Question: Who is the Auditor?**
-Answer: D & Partners CPA Limited
-
-### Sub-Distributors & Complaints
-
-**Question: Why sub-distributors are not required to make WMC aware of any investor complaints?**
-Answer: Our sub-distributors are SFC licensed corporations. We regularly monitor the enforcement announcements on the SFC website to see if there are any matching cases. They are under regulatory oversight with annual audits. If we see there is an enforcement cases related to the sub distributor or their employees, we would request them to address our concern and see if there is any internal control enhancement to fix the deficiency in the compliant standard.
-
-**Question: Are sub-distributors required to make you aware of any relevant complaints?**
-Answer: Our sub-distributors are SFC licensed corporations. We regularly monitor the enforcement announcements on the SFC website to see if there are any matching cases. They are under regulatory oversight with annual audits. If we see there is an enforcement cases related to the sub distributor or their employees, we would request them to address our concern and see if there is any internal control enhancement to fix the deficiency in the compliant standard.
-
-### Source of Funds & Clients
+### Clients, Funds & Jurisdictions
 
 **Question: Source of funds for UBO**
-Answer: Clients' money
+Answer: Clients’ money
 
 **Question: Source of Wealth for UBO**
-Answer: Clients' money
+Answer: Clients’ money
 
 **Question: What is the Country(s) of origin of your Source of Funds?**
-Answer: Mainly from Hong Kong. WMC has clients from SFC licensed Corporation and individual investors reside in Hong Kong. WMC still have small number of clients has Singapore, Australia, United Kingdom bank accounts to deposit money to WMC.
+Answer: Mainly from Hong Kong. WMC has clients from SFC licensed Corporations and individual investors who reside in Hong Kong. Some clients also have bank accounts in Singapore, Australia, and the United Kingdom. Some non-Hong Kong addresses include China, Australia, Singapore, Malaysia, and the United Kingdom.
 
-Those individuals can provide Hong Kong ID card to prove they are resident in Hong Kong. Some non-Hong Kong address included China, Australia, Singapore, Malaysia, United Kingdom.
-
-Mainly in Hong Kong, China as most of the corporate account are SFC licensed corp. Authorized signatories are staffs in the SFC licensed corporation.
-
-**Question: Does WMC have a significant (10% or more) non-resident client base, either by number of clients or by revenues?**
+**Question: Does WMC have a significant (10% or more) non-resident client base, either by number of clients or by revenues.**
 Answer: No. The number of clients from a non-Hong Kong resident base is less than 10%.
 
 **Question: Country of domicile of underlying customers (top 5)**
@@ -54,220 +91,108 @@ Answer:
 **Question: Are any of the sub-distributors located in High Risk jurisdictions?**
 Answer: No.
 
-### Management Changes
+### Business Model & Procedures
 
-**Question: Please advise whether there has been any major change in senior management over the past 3 years? If yes, please briefly provide the name and the year of change.**
-Answer: Ng Sai Tong becomes the executive director of Wealth Management Cube Limited in 2022.
+**Question: describe the Company’s business and procedure**
+Answer: Our business model is B-B-C and we do not accept retail or individual clients directly. All retail clients are directed to opening an account with an IFA of their choice. All IFAs must go through our due diligence process. As a fund platform, normally all funds available are accessed when the consultants of the IFA login to their accounts. For unauthorized funds, only Professional Investors, who have declared themselves to being such, have access to this section.
 
-### WMC Nominee Limited
+**Question: distribution of our funds by electronic or other non-face-to-face means?**
+Answer: All funds are normally distributed through Cube 2, our fund distribution platform, where users / consultants of our client investors login and select their desired funds for the portfolio of their end-investors.
 
-**Question: What is the function of the entity WMC Nominee Limited?**
-Answer: WMC Nominee Limited is not a trust or company service provider under TCSP. The only function of WMC Nominee Limited is to hold the client assets and separate the client assets from Wealth Management Cube Limited. Therefore, it is registered under SFC and have a CE number and own SFC portal login.
+**Question: responsible for suitability testing on investors.**
+Answer: As an execution-only platform, we are generally product neutral and do not recommend investment products. As such, we generally rely on our sub-distribution partners to carry out suitability testing for their end-investors. However, WMC does ensure unauthorized funds will only be distributed to Professional Investors (PI). The platform has features to assist in suitability, such as comparing a fund's risk rating to the client's risk profile and generating a system alert if a fund's risk is higher.
 
-**Question: What is an associated entity?**
-Answer: Please see the answer on SFC's website and relevant legislation in below links:
-https://www.sfc.hk/en/faqs/intermediaries/licensing/Associated-entities
-Cap. 571 Securities and Futures Ordinance (elegislation.gov.hk)
+**Question: Internal process for the review and approval of new fund products to be distributed**
+Answer: Yes, for Hong Kong authorized funds, we follow our usual onboarding procedure including due diligence on the product and product provider, risk-rating assessment, and approval. For Hong Kong unauthorized funds, we require the IFA to supply a formal request, and we then apply our normal due diligence and internal approval process.
 
-### Information Technology
+### Outsourcing & Third Parties
 
-**Question: Is your firm, in all material aspects, complying with the MAS Technology Risk Management Guidelines? If not, please state if you are in compliance with other technology guidelines or standards?**
-Answer: No. Our company strictly adheres to the Hong Kong SFC's requirements for External Electronic Data Storage Providers (EDSP), specifically:
+**Question: list any other of the Company’s outsourced activities,**
+Answer: We have outsourced the following activities:
+- **Product Risk Ratings:** Provided by CT Risk Solution Limited.
+- **Fund Prices and Documents:** Powered by FE Fundinfo (Hong Kong) Limited.
+- **External Data Storage:** Provided by PCCW.
+- **Cloud Infrastructure:** Provided by Amazon Web Services (AWS).
+- **External Audit:** Conducted annually by D & Partners CPA Limited.
 
-1. Regulatory Compliance & Data Management
-- Maintain full set of regulatory records accessible from Hong Kong office without undue delay
-- Implement comprehensive audit trails for all data access and modifications
-- Ensure proper data backup and recovery procedures with daily backups
-- Maintain detailed Access Map of regulatory record locations
+**Question: Company’s initial and ongoing due diligence process on the outsourced activities**
+Answer: 
+- **For CT Risk Solution Limited (risk-ratings):** Our due diligence focuses on examining the rationale and vitality of the model which generates the ratings. We also examine their procedures, resources, and policies. Annual Reviews are conducted to check for any negative views or regulatory issues.
+- **For FE Fundinfo (fund data):** Our due diligence includes evaluation of the operating history, reputation, and compliance record. We also look at their internal procedures and control in assuring data quality. Annual Reviews are also carried out.
 
-2. AWS Cloud Platform Implementation
-- Utilize AWS's globally distributed infrastructure with multiple availability zones
-- Leverage AWS security certifications (SOC 1/2/3, ISO 27001/27017/27018)
-- Implement AWS monitoring tools (CloudTrail, CloudWatch) for audit requirements
-- Maintain business continuity through AWS's redundant infrastructure
+**Question: the Company’s oversight process of the outsourced tasks and/or processes.**
+Answer: 
+- **For CT Risk Solutions Limited:** We require a quarterly report covering renewed ratings. We evaluate the results for rationale and consistency and require any alterations to the risk-rating models to be reported to us.
+- **For FE Fundinfo:** We periodically review the documents for accuracy and quality. Fund prices are examined on a daily basis. Our IT Department also generates reports twice a day to monitor for data abnormality.
 
-3. Internal Controls & Policies
-- Documented policies for data access, storage, and retrieval
-- Strict user access management and authentication controls
-- Regular testing of business continuity procedures
-- Ongoing monitoring and incident response protocols
+**Question: Are sub-distributors required to make you aware of any relevant complaints?**
+Answer: Our sub-distributors are SFC licensed corporations. We regularly monitor the enforcement announcements on the SFC website to see if there are any matching cases. They are under regulatory oversight with annual audits. If we see an enforcement case related to the sub-distributor, we would request them to address our concern and enhance their internal controls.
 
-4. Security & Risk Management
-- Comprehensive information security measures
-- Regular due diligence on AWS as our EDSP
-- Documented disaster recovery procedures
-- Continuous compliance monitoring and reporting
+### Policies & Procedures
 
-All implementations align with SFC circular requirements (19EC59) and associated FAQs regarding external electronic data storage.
+**Question: Conflicts of interest**
+Answer: Any conflicts of interest should be properly managed and minimized to ensure that clients are fairly treated. The duties of the sales function and front-office are properly segregated from back-office operations. We will disclose any material interest in a transaction to the client and have taken all reasonable steps to ensure fair treatment. We also have detailed policies on Gifts and Entertainment, Working for Competitors, Use of Company Assets, Dealing with Suppliers, and Bribery.
 
-**Question: Has there been material changes to your IT infrastructure (including use of dedicated hardware i.e. servers/network devices) or cloud services? Has there been material changes to your system architecture involving multi-tenancy and data commingling for the services provided?**
-Answer: No material changes to IT infrastructure. No material changes to system architecture involving multi-tenancy.
+**Question: Inducements**
+Answer: The Company considers it paramount to act fairly and professionally. Generally, staff are not allowed to receive benefits from any third parties, or make payments to the same, except for limited provisions in the Gift and Entertainment Policies which must be reported. All charges are separately itemized for clients.
 
-**Question: If the services are provided using a cloud-based solution, please indicate the cloud provider and provide an illustration of your cloud solution.**
-Answer: We use AWS (Amazon Web Services) as our cloud service provider.
+**Question: the key features of the Company’s remuneration process.**
+Answer: Remuneration to our staff is generally salary-based, and is determined based on experience and merit, such that our employees would not benefit from compromising the interests of our clients. Remuneration is based on an unbundled, separate compensation and is unrelated to any specific product on our platform.
 
-Architecture Overview:
-- VPC (Virtual Private Cloud) with public and private subnets for security isolation
-- Components include:
-  * Web Components in public subnet
-  * Database (SQL Server) in private subnet
-  * AWS Lambda for serverless computing
-  * Load balancer (LB) for traffic management
-  * Security groups and network ACLs for access control
+**Question: Investor complaints handling**
+Answer: Complaints from clients must be handled by Senior Management. All information received shall be kept confidential and a register of complaints should be kept. We must investigate and respond promptly. Where a complaint cannot be remedied promptly, the client must be advised of further steps available, including the right to refer a dispute to the FDRC. All files of complaints must be kept for at least 7 years.
 
-Security Assessments:
-- AWS provides various compliance reports and certifications through AWS Artifact, including SOC 1, 2, and 3 reports, ISO 27001, 27017, and 27018 certifications, and PCI DSS compliance reports
-- Our architecture implements AWS security best practices including network isolation using VPC, private subnets for sensitive data, encryption at rest and in transit, access control through security groups, and regular monitoring and alerting
-- No material findings have been identified in security assessments
+**Question: Personal account dealing**
+Answer: Our Staff Dealing Policy dictates that all staff are required to disclose existing investment holdings and related outside brokerage accounts upon joining the Company and at least annually thereafter. They are required to obtain approval for outside brokerage accounts and ensure that copies of trade confirmations and account statements are sent to the Compliance Officer.
 
-Control Procedures:
-Our system architecture ensures:
-1. Data Isolation: Customer data is stored in dedicated SQL Server database, private subnet deployment for database access, network segmentation through VPC design
-2. Data Confidentiality: Secure access through load balancer, encrypted data transmission, role-based access control
+**Question: Whistleblowing**
+Answer: Our Senior Management treats issues of whistleblowing with care and professionalism. The Company pays attention to all reports or findings from employees or external parties of possible malpractice and wrongdoings. Discussions and investigations would be carried out amongst Senior Management, ensuring fairness, impartiality, and prudence.
 
-There have been no material changes to these control procedures.
+**Question: the basis on which sales are recruited, e.g. qualifications, experience etc and on-going management procedures in terms of training, assessments etc**
+Answer: Sales are recruited based on both qualifications and experience. All sales representatives are licensed and are subject to the annual SFC Continuous Professional Training (CPT) requirements. They are also required to receive on-the-job training and training sessions regarding professional skills, sales, and compliance knowledge.
+
+### AML, KYC, CFT
+
+**Question: The process in place for AML screening at investor level.**
+Answer: Name scan is performed to ascertain the identity of prospective investors and to determine if an investor falls into high-risk categories such as a Politically Exposed Person (PEP). This action is aided by the use of Dow Jones’ Factiva as our name search engine. In addition, periodic screenings are also performed against international sanction lists and PEPs as stipulated by the Hong Kong SFC.
+
+**Question: AML, KYC, CFT**
+Answer: We observe closely the SFC's “Know-Your-Clients” requirements. We perform formal checking on our FI partners and a second-tier KYC on the end-investors. For our FI clients, we require standard documents like Certificate of Incorporation, Business Registration, etc. For end-investors, we verify their identity, FATCA & CRS status, integrity, and risk profile. We use a third-party system for name scanning to identify high-risk individuals (e.g., PEPs) and perform Enhanced Due Diligence (EDD) on them. Annual AML/CTF training sessions are conducted for all staff.
+
+### IT, Cybersecurity, BCP & Record Keeping
+
+**Question: Is your firm, in all material aspects, complying with the MAS Technology Risk Management Guidelines?**
+Answer: No. Our company strictly adheres to the Hong Kong SFC's requirements for External Electronic Data Storage Providers (EDSP). This includes maintaining accessible regulatory records, comprehensive audit trails, daily backups, and leveraging AWS for our cloud platform implementation with its security certifications (SOC, ISO).
+
+**Question: If the services are provided using a cloud-based solution, please indicate the cloud provider.**
+Answer: We use AWS (Amazon Web Services) as our cloud service provider. Our architecture includes a VPC with public/private subnets, web components, a SQL Server database, AWS Lambda, and a load balancer.
 
 **Question: Please state and provide all available certificate/security/features around your IT infrastructure.**
-Answer: Our IT infrastructure leverages AWS cloud services with comprehensive security features implemented:
+Answer: Our IT infrastructure leverages AWS cloud services. Key features include: Network Security (VPC, Security Groups), Identity and Access Management (IAM, MFA), Encryption and Data Protection (AWS KMS, S3 encryption), Monitoring and Logging (CloudWatch, CloudTrail), and Infrastructure Security (physical security provided by AWS).
 
-1. Network Security: Virtual Private Cloud (VPC) with public and private subnet segregation, Security Groups and Network ACLs for strict access control, Controlled routing configurations for network traffic management
-
-2. Identity and Access Management: IAM (Identity and Access Management) implementation, Multi-factor Authentication (MFA), Strict password policies, Role-based access control
-
-3. Encryption and Data Protection: AWS KMS (Key Management Service) for encryption key management, S3 bucket encryption for secure storage, Data encryption policies
-
-4. Monitoring and Logging: CloudWatch monitoring and alerts, CloudTrail for API activity logging and audit trails, Comprehensive logging and monitoring metrics
-
-5. Infrastructure Security: AWS provided physical and environmental security, Regular security patches and updates, Secure access points and protocols
-
-While we leverage AWS's secure infrastructure, we maintain our own security controls and regularly review our security posture to ensure alignment with industry best practices.
-
-**Question: Does your firm have procedures to securely destroy or remove the firm's customer information when the need arises?**
-Answer: Our firm has established procedures for secure data destruction and removal of customer information when required. These procedures are implemented through our AWS infrastructure:
-
-1. Database Level Deletion: Secure deletion procedures in SQL Server database
-
-2. Storage Level Removal: Secure deletion of data in AWS S3 storage, Implementation of object lifecycle policies, Versioning control for data management
-
-3. Security Measures: Access controls to prevent unauthorized deletion, Audit logging of all deletion activities through CloudTrail, Regular monitoring of deletion processes through CloudWatch
-
-There have been no material changes to these procedures.
-
-**Question: Has there been material changes to the firm's policy around storage of sensitive data? Please indicate where the sensitive data is stored including any offshore locations.**
-Answer: No material changes have been made to our firm's sensitive data storage policy. Our policies continue to align with AWS best practices and regulatory requirements.
-
-All sensitive data is stored within AWS infrastructure in the Asia Pacific (Hong Kong) region. Specifically:
-- Customer data is stored in SQL Server databases within private VPC subnets
-- File storage is managed through AWS S3 with encryption enabled
-- No offshore storage locations are used for sensitive data
+**Question: Does your firm have procedures to securely destroy or remove the firm’s customer information when the need arises?**
+Answer: Yes, our firm has established procedures for secure data destruction implemented through our AWS infrastructure, including secure deletion in SQL Server and AWS S3, with access controls and audit logging via CloudTrail.
 
 **Question: Has there been a Threat and Vulnerability Risk Assessment performed on the physical security and environmental controls of the data centre over the trailing 12 months?**
-Answer: As we utilize AWS infrastructure, our data center physical security and environmental controls benefit from AWS's comprehensive security assessments. AWS manages the physical security of the data centers. AWS maintains SOC reports covering physical and environmental controls.
-
-For our specific implementation, we conduct regular security reviews of our network configurations, access controls, security group settings, and encryption implementations.
+Answer: As we utilize AWS infrastructure, our data center's physical security and environmental controls benefit from AWS's comprehensive security assessments and SOC reports. We conduct our own regular security reviews of our specific cloud implementation.
 
 **Question: Do you employ multi-factor authentication (MFA) for sensitive systems?**
-Answer: Yes, we employ multi-factor authentication for sensitive systems:
-- MFA is enabled for AWS Console access
-- MFA is required for all administrative access
-- Additional authentication factors include time-based one-time passwords (TOTP) and hardware security keys where applicable
+Answer: Yes, we employ multi-factor authentication for sensitive systems. MFA is enabled for AWS Console access and is required for all administrative access.
 
-**Question: Please indicate if there are material changes in the performance of the below controls:**
-Answer: There are no material changes in the performance of these controls. Our current implementation includes:
+**Question: the Company’s Cybersecurity program, including trainings and procedures for prevention.**
+Answer: Our company’s policy for confronting cybersecurity issues lies in preparation, swift response, and recovery. Our IT staff and Management stay alert to the latest threats. Periodic upgrades to our system are carried out to ensure our IT security measures are current and effective.
 
-(a) Privileged Account Monitoring: All privileged account activities are logged through AWS CloudTrail, Regular reviews of IAM user activities, Automated alerts for suspicious privileged account activities, Monitoring through CloudWatch
+**Question: Has cybersecurity training been provided to staff? What is the frequency of such training?**
+Answer: Yes, cybersecurity training has been provided to staff on an annual basis, with the most recent session held in November 2023. The training covers common cyber threats and practical security measures.
 
-(b) Log Protection: AWS CloudTrail logs are stored in dedicated S3 buckets with encryption, Log files are protected with strict access controls, Immutable logging enabled to prevent tampering, Version control enabled for audit trails
+**Question: BCP and contingency planning**
+Answer: The functions of our Company are clearly defined and governed by well-established procedures, minimizing the risk of key man departure. Our BCP also details immediate follow-up actions for system failures or inaccessibility to the office. The objective is to protect staff and resources, safeguard records, and ensure swift response to disruptions to meet all contractual and regulatory obligations. The last BCP was performed on 19th November 2024 with no material findings.
 
-(c) Access Restrictions: Strict IAM policies implementing principle of least privilege, Security groups controlling access to services, Private subnets for sensitive services, Role-based access control implementation
+**Question: Please confirm that the Company has established, implemented and maintain a record keeping procedure.**
+Answer: Confirmed. Our IT Policies observe SFC guidelines. We have policies for data storage, backup, and integrity. Records must be kept for: Not less than 7 years in general; Not less than 2 years for records showing particulars of orders; and tape recorded transactions should be kept for not less than 6 months.
 
-(d) Integrity Checks: AWS Config rules for configuration monitoring, Database integrity monitoring, Regular system configuration audits, Automated alerts for unauthorized changes
-
-(e) Password Controls Review: Regular password policy compliance checks, Enforcement of strong password requirements through IAM, Periodic password rotation requirements, Regular review of password policies
-
-(f) Access Rights Review: Regular IAM user access reviews, Periodic audit of security group permissions, Regular review of role assignments, Automated inactive account detection
-
-No lapses have been identified in relation to services rendered in any of these areas. Our monitoring systems have not detected any security incidents or compliance violations.
-
-### Compliance Monitoring Program
-
-**Question: Please confirm that the Company has established, implemented and maintain a compliance monitoring program, i.e. how does it ensure that your Compliance manual is followed by all of its employees.**
-Answer: All employees are required to attend Compliance Training Sessions held by Management to ensure that they understand the legal and compliance issues involved related to their positions, and the standards and practices expected of them by the Company and the Hong Kong Securities and Futures Commission. All staffs are tested on the materials of the Compliance Manual to ensure competence. Controls are set up to govern all essential procedures with strict observation of compliance requirements, and all Management are required to ensure the established control and policies are executed with prudence by all staffs.
-
-### Cybersecurity
-
-**Question: Has cybersecurity training been provided to staff? What is the frequency of such training? When was the last training held and what did it cover?**
-Answer: Cybersecurity training has been provided to staff on an annual basis, with the most recent session held on NOV, 2023 through a video training format. The yearly training covers comprehensive cybersecurity topics including common cyber threats (phishing scams, malware, ransomware, social engineering, and data breaches) as well as practical security measures such as email security, safe internet browsing, and mobile device security, ensuring staff maintain up-to-date knowledge of cybersecurity best practices and awareness of current threats.
-
-**Question: Do you have a cybersecurity policy? Is there a designated cyber security officer? Has the policy been reviewed by an external consultant? Is the policy followed by any other third parties?**
-Answer: WMC has a formal cybersecurity policy documented in the WMC IT Policy. While there isn't a specifically designated cybersecurity officer, IT security responsibilities are managed through the Administrator and company policy compliance officer roles as defined in the policy. The policy underwent regulatory review during a recent SFC visit. Regarding third parties, the policy mandates that any external connections to company IT facilities must comply with the Company's IT Security and Privacy Policy, though specific third-party agreements would need to be verified separately.
-
-**Question: Describe how cybersecurity is managed, including a description of the controls in place (namely, anti-virus software, vulnerability and intrusion testing) and the frequency at which vulnerability scanning is conducted, and updates/patches applied to all systems.**
-Answer: Cybersecurity is managed through a layered control system that includes firewall implementation for monitoring all incoming and outgoing Internet traffic, with all network traffic being scanned and filtered by anti-virus software. System protection measures include mandatory virus scanning, particularly for external media and notebooks reconnecting to the network after external use. Users are required to perform regular PC maintenance including Scandisk and virus scans on a quarterly basis. Access controls are maintained through password protection policies, file-level security, and data encryption for confidential information.
-
-**Question: Have you experienced any cybersecurity breaches or incidents? If so, how were they handled?**
-Answer: No.
-
-### Business Continuity Plan (BCP)
-
-**Question: For BCP, how often is this performed, e.g. annually? When was it last performed and are there any findings?**
-Answer: Annually. The last BCP was performed on 19th November 2024. There are no material findings in the review.
-
-### Ownership Structure
-
-**Question: Could the prospect elaborate the rationale for such ownership structure, including the three separate holding lines as well as the utilization of three different holding companies?**
-Answer: Rationale for such ownership structure is for tax optimization.
-
-**Question: Do these holding companies hold any other operating companies?**
-Answer: The three holding companies, namely Wellchamp Investments Limited, Wellchamp Fund Limited and Wellchamp Capital Limited, do not hold any operating company.
-
-### Record Keeping
+**Question: Please confirm if the Company processes and/or store personal data, and if it ensures data protection in accordance with the GDPR requirements.**
+Answer: All personal data are stored only in accordance to statutory requirements and are destroyed in high-level security after the required record-keeping period. All handling of data are processed with strict observance of the GDPR data protection requirements.
 
 **Question: Do you have the ability to maintain books and records on behalf of Sofi Invest in compliance with Exchange Act Rules 17a-3 and 17a-4, as well as FINRA Rule 3110(b)(4) and FINRA Rule Series 4510 or other applicable laws, rules and regulations?**
-Answer: Hong Kong's SFC recordkeeping rules under the SFO, Keeping of Records Rules, and Code of Conduct serve a similar purpose to the U.S. rules -- ensuring licensed corporations keep accurate, accessible, and supervisory‑compliant books and records.
-
----
-
-## DOCUMENT 2: Due Diligence of WMC (Version 202401, amended 20241219)
-
-### Basic Information
-
-**Legal Name of the Company:** Wealth Management Cube Limited (WMC)
-
-**Address:** 804A2, 8/F, World Wide House, 19 Des Voeux Road Central, Central, Hong Kong
-
-**Company Registration No.:** CI No.: 2116198
-
-**Date of incorporation:** 04 JULY 2014
-
-**Company ownership chart:** Will provide upon request (including ultimate beneficial owners more than 20% of the shares and their respective percentage of shares held)
-
-**Company's insurance coverage:**
-- Type of insurance: Professional Indemnity
-- Insurance company: Chubb Elite Financial Institutions Civil Liability Insurance
-- Amount insured: HKD 7,500,000
-
-**Compliance Officer Contact Details:**
-- Name: Lau Hiu Fung Peter
-- Tel: 852 3854 6419
-- Email: peterlau@wmcubehk.com
-
-**Brief background profile:**
-WMC is a SFC licensed corporation (CE No. BEC913) in Hong Kong Established in 2014. We are providing B2B & B2B2C Fund Investment Dealing & Settlement services and Insurance Admin & CRM solutions. Our principal activity of the Company is the provision of platform servicing for financial institutions. Our clients are mainly Financial Advisory firms (FAs) which make use of our platform in the dealing of investment products for their end-investors. We have around 18 staffs now.
-
-### SFC Associated Entity Information
-
-**Question: What is an associated entity under SFC regulations?**
-Answer: Under Section 165(3) of the Securities and Futures Ordinance, an associated entity of an intermediary (other than an authorized financial institution) cannot conduct any business other than receiving or holding client assets, whether on behalf of an intermediary or otherwise, unless authorized in writing by the SFC.
-
-**Question: If an associated entity is also a licensed corporation, does it require written authorization from the SFC?**
-Answer: If the licensed corporation notifies the SFC that it has become an associated entity of another intermediary, there is no need to seek additional authorization under Section 165(3). It may continue to carry out its regulated activity(ies) as a licensed corporation.
-
-**Question: Can entities in the same group make a single notification for changes?**
-Answer: Yes. For entities belonging to the same group of companies, a licensed corporation (or registered institution) may make a notification required under the Associated Entities - Notice Rules on its behalf and on behalf of other group entities in respect of the same change in information. The notification should clearly state on whose behalf it is made, and the represented entities should be aware of the notification.
-
-**Question: Can a licensed corporation that is also an associated entity make a single notification under both rules?**
-Answer: Yes. Where the licensed corporation (or registered institution) is also an associated entity, a single notification for the same change in information is acceptable provided that the capacities under which the notification is made is clearly stated.
-
-**Question: Can a licensed corporation that is also an associated entity make a single submission of financial statements?**
-Answer: Yes. A single submission by a licensed corporation that is also an associated entity is acceptable provided that the submission complies with the requirements under the Accounts and Audit Rules for a licensed corporation and states the capacities of the corporation.
+Answer: Hong Kong’s SFC recordkeeping rules under the SFO, Keeping of Records Rules, and Code of Conduct serve a similar purpose to the U.S. rules — ensuring licensed corporations keep accurate, accessible, and supervisory‑compliant books and records.
