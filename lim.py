@@ -36,17 +36,15 @@ def _parse_qa_from_kb():
         if len(qa_split) == 2:
             question = qa_split[0].strip()
             answer = qa_split[1].strip()
-            
-            # --- FIXED HERE ---
-            # Normalize the question: lowercase, strip whitespace, and remove trailing punctuation.
-            normalized_question = re.sub(r'[?.,]$', '', question.lower().strip())
+            normalized_question = re.sub(r'[?.]$', '', question.lower().strip())
             qa_dict[normalized_question] = answer
             
     return qa_dict
 
+# --- THIS IS THE FUNCTION WE ARE UPDATING ---
 def _get_gemini_semantic_response(question: str) -> str:
     """
-    Gets a response from the Gemini model using the full context.
+    Gets a response from the Gemini model using Chain of Thought prompting.
     This is the fallback for when no exact match is found.
     """
     try:
@@ -54,22 +52,25 @@ def _get_gemini_semantic_response(question: str) -> str:
         if not model:
             return "Error: Model initialization failed. Please check your API key."
         
-        prompt = f"""You are a Due Diligence Assistant for Wealth Management Cube Limited (WMC).
-
-        【CRITICAL RULES】
-        1. ❌ ONLY use information from the KNOWLEDGE BASE below.
-        2. ❌ DO NOT make up, guess, or use external knowledge.
-        3. ❌ If the information is NOT in the KNOWLEDGE BASE, you MUST say exactly: "I don't have that specific information in our DDQ documents. Please contact our Compliance Officer, Peter Lau, at peterlau@wmcubehk.com or +852 3854 6419 for more details."
-        4. ✅ Be professional, concise, and accurate.
+        # --- UPDATED PROMPT WITH CHAIN OF THOUGHT ---
+        prompt = f"""You are a world-class Due Diligence Assistant for Wealth Management Cube Limited (WMC). Your task is to answer user questions based ONLY on the provided knowledge base.
 
         【KNOWLEDGE BASE - START】
         {config.KNOWLEDGE_BASE}
         【KNOWLEDGE BASE - END】
 
+        【REASONING PROCESS - Follow these steps before answering】
+        1.  **Analyze the User's Question:** Identify the core keywords and intent of the user's question. For example, if the user asks "Tell me about your process for overseeing outsourced work," the keywords are "process," "overseeing," "outsourced work."
+        2.  **Scan the Knowledge Base:** Search the entire KNOWLEDGE BASE for sections, questions, or answers that contain these keywords or related concepts. The user's question phrasing might be different from the questions in the knowledge base, so you must search for concepts, not just exact text.
+        3.  **Synthesize the Answer:** If you find one or more relevant pieces of information, combine them into a single, comprehensive, and well-formatted answer.
+        4.  **Final Check & Fallback:** Read your synthesized answer. Does it directly address the user's question using only information from the knowledge base? 
+            - If YES, provide that answer.
+            - If NO, and you genuinely could not find any relevant information after following the steps above, then and ONLY then, you MUST respond with the exact phrase: "I don't have that specific information in our DDQ documents. Please contact our Compliance Officer, Peter Lau, at peterlau@wmcubehk.com or +852 3854 6419 for more details."
+
         【USER QUESTION】
         {question}
 
-        【YOUR ANSWER】
+        【YOUR FINAL ANSWER】
         """
         
         response = model.generate_content(prompt)
@@ -97,10 +98,7 @@ def get_response(question: str) -> str:
     2. If no exact match is found, falls back to the AI for a semantic search.
     """
     qa_dict = _parse_qa_from_kb()
-    
-    # --- FIXED HERE ---
-    # Normalize the user's question for a robust lookup.
-    normalized_q = re.sub(r'[?.,]$', '', question.lower().strip())
+    normalized_q = re.sub(r'[?.]$', '', question.lower().strip())
 
     if normalized_q in qa_dict:
         print(f"✅ Exact match found for: '{question}'")
