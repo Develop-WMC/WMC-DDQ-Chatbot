@@ -2,7 +2,7 @@ import streamlit as st
 import json
 from datetime import datetime
 import config
-import llm
+import llm     # <-- 修正：从 llmgo 改回 llm
 
 def load_css():
     """Inject custom CSS into the Streamlit app."""
