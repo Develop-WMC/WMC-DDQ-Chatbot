@@ -1,8 +1,8 @@
 import streamlit as st
 import json
 from datetime import datetime
-import config  # Import our configuration module
-import llm     # Import our language model module
+import config
+import llm
 
 def load_css():
     """Inject custom CSS into the Streamlit app."""
@@ -24,7 +24,7 @@ def save_conversation_log(username: str, question: str, answer: str):
 
 
 def login_page():
-    """Renders the professional login page."""
+    """Renders the professional login page for demo purposes."""
     load_css()
     
     st.markdown("""
@@ -38,32 +38,26 @@ def login_page():
     
     with col2:
         st.markdown('<div class="login-container">', unsafe_allow_html=True)
-        st.markdown('<div class="login-title">🔐 Secure Login</div>', unsafe_allow_html=True)
+        st.markdown('<div class="login-title">🔐 Secure Login (Demo)</div>', unsafe_allow_html=True)
         
         with st.form("login_form"):
-            username = st.text_input("Username", placeholder="Enter your username", key="login_user")
-            password = st.text_input("Password", type="password", placeholder="Enter your password", key="login_pass")
+            username = st.text_input("Username", placeholder="Enter any username", key="login_user")
+            password = st.text_input("Password", type="password", placeholder="Enter any password", key="login_pass")
             
             if st.form_submit_button("🔓 Login", use_container_width=True):
-                # Safely get password from the dictionary-like object
-                if username in config.USERS and config.USERS.get(username) == password:
+                # Demo Login Logic: Allow login if both fields are non-empty
+                if username and password:
                     st.session_state.authenticated = True
                     st.session_state.username = username
-                    st.success("✅ Login successful! Redirecting...")
+                    st.success("✅ Demo login successful! Redirecting...")
                     st.rerun()
                 else:
-                    st.error("❌ Invalid credentials. Please try again.")
+                    st.error("❌ Please enter a username and password.")
         
         st.markdown('</div>', unsafe_allow_html=True)
         
-        with st.expander("ℹ️ Demo Access"):
-            st.markdown("""
-                <div class="info-box">
-                    <strong>Demo Credentials:</strong><br>
-                    Username: <code>demo</code><br>
-                    Password: <code>demo123</code>
-                </div>
-            """, unsafe_allow_html=True)
+        with st.expander("ℹ️ Demo Access Info"):
+            st.info("In this demo mode, you can enter any non-empty username and password to log in.")
         
         st.caption(f"🔒 Secure connection • Powered by {config.MODEL_NAME}")
 
@@ -99,7 +93,7 @@ def _render_sidebar():
         st.markdown("---")
         st.markdown("### ℹ️ About This Tool")
         st.info(f"""
-            This AI assistant uses information from WMC's official Due Diligence documents only.
+            This AI assistant uses a hybrid search on WMC's official DDQ documents.
             🤖 Model: {config.MODEL_NAME}
             🌡️ Temp: {config.GENERATION_CONFIG['temperature']}
         """)
@@ -171,7 +165,7 @@ I can help you with questions about:
         
         with st.chat_message("assistant", avatar="🤖"):
             with st.spinner("🔍 Searching our DDQ documents..."):
-                response = llm.get_gemini_response(prompt)
+                response = llm.get_response(prompt)
                 st.markdown(response)
         
         st.session_state.messages.append({"role": "assistant", "content": response})
