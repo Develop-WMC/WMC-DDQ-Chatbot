@@ -30,18 +30,16 @@ def _parse_qa_from_kb():
     normalized questions and their answers.
     """
     qa_dict = {}
-    # Split the entire text by the question marker
     parts = config.KNOWLEDGE_BASE.split("\n**Question:**")
-    for part in parts[1:]:  # Skip the first part as it has no preceding question
-        # Split each part into question and answer
+    for part in parts[1:]:
         qa_split = part.split("\n**Answer:**")
         if len(qa_split) == 2:
             question = qa_split[0].strip()
             answer = qa_split[1].strip()
             
-            # Normalize the question to use as a dictionary key: lowercase, strip whitespace
-            # and remove trailing punctuation like '?' or '.'
-            normalized_question = re.sub(r'[?.]$', '', question.lower().strip())
+            # --- FIXED HERE ---
+            # Normalize the question: lowercase, strip whitespace, and remove trailing punctuation.
+            normalized_question = re.sub(r'[?.,]$', '', question.lower().strip())
             qa_dict[normalized_question] = answer
             
     return qa_dict
@@ -98,19 +96,15 @@ def get_response(question: str) -> str:
     1. Tries to find an exact match for the question in the knowledge base.
     2. If no exact match is found, falls back to the AI for a semantic search.
     """
-    # Get the pre-parsed Q&A dictionary
     qa_dict = _parse_qa_from_kb()
     
-    # Normalize the user's question for a robust lookup
-    # (lowercase, strip whitespace, remove trailing punctuation)
-    normalized_q = re.sub(r'[?.]$', '', question.lower().strip())
+    # --- FIXED HERE ---
+    # Normalize the user's question for a robust lookup.
+    normalized_q = re.sub(r'[?.,]$', '', question.lower().strip())
 
-    # Check if the normalized question exists as a key in our dictionary
     if normalized_q in qa_dict:
-        # If it exists, we have an exact match! Return the answer directly.
-        print(f"✅ Exact match found for: '{question}'") # For debugging in console
+        print(f"✅ Exact match found for: '{question}'")
         return qa_dict[normalized_q]
     else:
-        # If no exact match, use the AI to understand the question semantically.
-        print(f"⚠️ No exact match. Using AI for: '{question}'") # For debugging in console
+        print(f"⚠️ No exact match. Using AI for: '{question}'")
         return _get_gemini_semantic_response(question)
