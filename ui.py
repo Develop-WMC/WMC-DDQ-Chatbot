@@ -2,7 +2,7 @@ import streamlit as st
 import json
 from datetime import datetime
 import config
-import llm     # <-- 修正：从 llmgo 改回 llm
+import llm
 
 def load_css():
     """Inject custom CSS into the Streamlit app."""
@@ -45,7 +45,6 @@ def login_page():
             password = st.text_input("Password", type="password", placeholder="Enter any password", key="login_pass")
             
             if st.form_submit_button("🔓 Login", use_container_width=True):
-                # Demo Login Logic: Allow login if both fields are non-empty
                 if username and password:
                     st.session_state.authenticated = True
                     st.session_state.username = username
@@ -98,7 +97,6 @@ def _render_sidebar():
             🌡️ Temp: {config.GENERATION_CONFIG['temperature']}
         """)
         
-        # Admin-specific tools
         if st.session_state.username == "admin":
             st.markdown("---")
             st.markdown("### 🔧 Admin Tools")
@@ -139,33 +137,25 @@ def chat_page():
     # Main chat area
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
     
-    # Initialize chat with a welcome message
     if not st.session_state.messages:
         welcome_message = """👋 **Welcome to the WMC Due Diligence Portal!**
 
-I can help you with questions about:
-- 🏢 Company information & registration
-- ✅ Compliance procedures & audits  
-- 🔒 IT infrastructure & cybersecurity
-- 👤 AML/KYC processes
-
-*Note: I only provide information from our official DDQ documents. For other details, I'll direct you to our Compliance Officer.*"""
+I can help you with questions about our company, compliance, IT, and more. Feel free to ask me anything about our due diligence information."""
         st.session_state.messages.append({"role": "assistant", "content": welcome_message})
 
-    # Display chat history
     for message in st.session_state.messages:
         with st.chat_message(message["role"], avatar="🤖" if message["role"] == "assistant" else "👤"):
             st.markdown(message["content"])
     
-    # Handle new user input
     if prompt := st.chat_input("💭 Type your question here..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user", avatar="👤"):
             st.markdown(prompt)
         
         with st.chat_message("assistant", avatar="🤖"):
-            with st.spinner("🔍 Searching our DDQ documents..."):
-                response = llm.get_response(prompt)
+            with st.spinner("🔍 Thinking..."):
+                # --- UPDATED: Pass the entire chat history to the response function ---
+                response = llm.get_response(prompt, st.session_state.messages)
                 st.markdown(response)
         
         st.session_state.messages.append({"role": "assistant", "content": response})
