@@ -5,7 +5,7 @@ import json
 from datetime import datetime
 import html
 from pathlib import Path
-import llm  # your existing module that provides get_response(prompt, messages, qa_dict, model)
+import llm  # your existing module providing get_response(prompt, messages, qa_dict, model)
 
 # --- CSS loader --------------------------------------------------------------
 
@@ -18,26 +18,21 @@ FALLBACK_CSS = """
 
 def load_css(css_content: str | None = None):
     """Inject CSS. If style.css exists, inject it LAST so it wins the cascade."""
-    # 1) Inject any inline CSS provided by caller (optional)
     if css_content:
         st.markdown(f"<style>{css_content}</style>", unsafe_allow_html=True)
 
-    # 2) Inject external style.css LAST (preferred)
     css_path = Path("style.css")
     if css_path.exists():
         raw = css_path.read_text(encoding="utf-8")
-        # cache-buster comment so browsers pick up new styles after redeploys
-        stamp = datetime.utcnow().isoformat() + "Z"
+        stamp = datetime.utcnow().isoformat() + "Z"  # cache-buster
         st.markdown(f"<style>{raw}\n/* build:{stamp} */</style>", unsafe_allow_html=True)
     else:
-        # 3) If no file, at least load a minimal fallback
         st.markdown(f"<style>{FALLBACK_CSS}</style>", unsafe_allow_html=True)
 
 # --- Utilities ---------------------------------------------------------------
 
 def save_conversation_log(username: str, question: str, answer: str):
-    """Append one turn of conversation to a JSONL file."""
-    log_entry = {
+    entry = {
         "timestamp": datetime.utcnow().isoformat() + "Z",
         "username": username,
         "question": question,
@@ -45,7 +40,7 @@ def save_conversation_log(username: str, question: str, answer: str):
     }
     try:
         with open("conversation_logs.jsonl", "a", encoding="utf-8") as f:
-            f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
     except IOError as e:
         print(f"Warning: Could not write to log file. {e}")
 
@@ -119,7 +114,7 @@ def login_page(css_content: str | None = None, model_name: str = "Model"):
     _ensure_session_defaults()
     load_css(css_content)
 
-    # Add a page-scoped root to let CSS detect "we are on login"
+    # Marker to allow login-scoped CSS (used to style the “white bar” as decoration)
     st.markdown("<div id='login-root'></div>", unsafe_allow_html=True)
 
     st.markdown("""
@@ -128,6 +123,9 @@ def login_page(css_content: str | None = None, model_name: str = "Model"):
             <div class="company-tagline">Due Diligence Information Portal</div>
         </div>
     """, unsafe_allow_html=True)
+
+    # Decorative divider we control (independent of whatever Streamlit renders)
+    st.markdown("<div class='login-deco'></div>", unsafe_allow_html=True)
 
     _, col2, _ = st.columns([1, 2, 1])
     with col2:
@@ -187,7 +185,6 @@ def chat_page(
     # Chat container
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
 
-    # Ensure messages list exists and has no empty entries (prevents empty white cards)
     msgs = st.session_state.get("messages", [])
     if not msgs:
         welcome_message = """👋 **Welcome to the WMC Due Diligence Portal!**
@@ -219,4 +216,4 @@ I can help you with questions about our company, compliance, IT, and more. I can
         save_conversation_log(st.session_state.get("username") or "unknown", prompt, response)
 
     st.markdown('</div>', unsafe_allow_html=True)
-    st.caption("UI css build: 2025-10-28")  # marker to confirm new build loads
+    st.caption("UI css build: 2025-10-28")
