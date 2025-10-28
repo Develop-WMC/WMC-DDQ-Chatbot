@@ -119,6 +119,9 @@ def login_page(css_content: str | None = None, model_name: str = "Model"):
     _ensure_session_defaults()
     load_css(css_content)
 
+    # Hide any chat input skeleton on the login screen (prevents the white bar)
+    st.markdown("<style>[data-testid='stChatInput']{display:none!important}</style>", unsafe_allow_html=True)
+
     st.markdown("""
         <div class="custom-header">
             <div class="company-name">🏢 Wealth Management Cube</div>
@@ -184,11 +187,16 @@ def chat_page(
     # Chat container
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
 
-    if not st.session_state.get("messages"):
+    # Ensure messages list exists and has no empty entries (prevents empty white cards)
+    msgs = st.session_state.get("messages", [])
+    if not msgs:
         welcome_message = """👋 **Welcome to the WMC Due Diligence Portal!**
 
 I can help you with questions about our company, compliance, IT, and more. I can also remember our conversation context for follow-up questions."""
-        st.session_state["messages"] = [{"role": "assistant", "content": welcome_message}]
+        msgs = [{"role": "assistant", "content": welcome_message}]
+    # Drop empty messages if any
+    msgs = [m for m in msgs if str(m.get("content", "")).strip()]
+    st.session_state["messages"] = msgs
 
     for message in st.session_state["messages"]:
         role = message.get("role", "assistant")
