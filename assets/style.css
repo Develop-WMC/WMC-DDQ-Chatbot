@@ -1,178 +1,192 @@
-/* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* --- Inter font (inline @font-face to avoid @import failures) --- */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuOKfMZg.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZg.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuI6fMZg.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuGKYMZg.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuFuYMZg.ttf) format('truetype');
+}
 
-/* Global Styles */
+/* 1) Global font */
 * {
-    font-family: 'Inter', sans-serif;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Hide Streamlit branding */
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
+/* 2) Hide Streamlit branding */
+#MainMenu, footer, header { visibility: hidden; }
 
-/* Main container */
-.main {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+/* 3) App background (robust selector for modern Streamlit) */
+[data-testid="stAppViewContainer"] {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
 }
 
-/* Custom header */
+/* 4) Custom header */
 .custom-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-    color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  margin-bottom: 2rem;
+  color: #fff;
 }
+.company-name { font-size: 2rem; font-weight: 700; margin-bottom: .5rem; }
+.company-tagline { font-size: 1.1rem; font-weight: 300; opacity: .95; }
 
-.company-name {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-}
-
-.company-tagline {
-    font-size: 1.1rem;
-    font-weight: 300;
-    opacity: 0.9;
-}
-
-/* Login form styling */
+/* 5) Login form card */
 .login-container {
-    max-width: 400px;
-    margin: 4rem auto;
-    padding: 3rem;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  max-width: 420px;
+  margin: 4rem auto;
+  padding: 3rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
 }
-
 .login-title {
-    text-align: center;
-    font-size: 1.8rem;
-    font-weight: 600;
-    margin-bottom: 2rem;
-    color: #333;
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  color: #333;
 }
 
-/* Chat container */
+/* 6) Chat wrapper you render around messages */
 .chat-container {
-    background: white;
-    border-radius: 15px;
-    padding: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-    max-width: 900px;
-    margin: 0 auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+  max-width: 980px;
+  margin: 0 auto;
 }
 
-/* Chat messages */
-.stChatMessage {
-    background: #f8f9fa;
-    border-radius: 10px;
-    padding: 1rem;
-    margin-bottom: 1rem;
+/* 7) Chat message bubbles (modern selector) */
+[data-testid="stChatMessage"] {
+  background: #f8f9fa !important;
+  border-radius: 12px !important;
+  padding: 1rem !important;
+  margin-bottom: 0.8rem !important;
+  border: 1px solid #eef1f5 !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
 }
 
-/* Buttons */
-.stButton button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 0.6rem 2rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* 8) Buttons */
+.stButton > button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 0.6rem 1.6rem !important;
+  font-weight: 600;
+  transition: transform .15s ease, box-shadow .15s ease;
+  box-shadow: 0 6px 16px rgba(102,126,234,0.35);
+}
+.stButton > button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(102,126,234,0.45);
 }
 
-.stButton button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+/* 9) Inputs (text/password/textarea/chat input) */
+.stTextInput input,
+.stTextArea textarea,
+[data-testid="stChatInput"] textarea {
+  border-radius: 10px !important;
+  border: 2px solid #e5e7eb !important;
+  padding: 0.75rem !important;
+  font-size: 1rem !important;
+  background: #fff !important;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.03) !important;
+}
+.stTextInput input:focus,
+.stTextArea textarea:focus,
+[data-testid="stChatInput"] textarea:focus {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.18) !important;
+  outline: none !important;
 }
 
-/* Input fields */
-.stTextInput input {
-    border-radius: 8px;
-    border: 2px solid #e0e0e0;
-    padding: 0.75rem;
-    font-size: 1rem;
+/* 10) Chat input bar divider */
+[data-testid="stChatInput"] {
+  border-top: 2px solid #e5e7eb !important;
+  padding-top: 0.6rem !important;
+  background: transparent !important;
 }
 
-.stTextInput input:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-/* Metrics */
+/* 11) Metric card */
 .metric-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 1.5rem;
-    border-radius: 10px;
-    text-align: center;
-    margin-bottom: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  padding: 1.2rem;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 1rem;
+  box-shadow: 0 8px 18px rgba(102,126,234,0.35);
 }
+.metric-value { font-size: 2.4rem; font-weight: 800; }
+.metric-label { font-size: .85rem; opacity: .95; letter-spacing: .06em; text-transform: uppercase; }
 
-.metric-value {
-    font-size: 2.5rem;
-    font-weight: 700;
-}
-
-.metric-label {
-    font-size: 0.9rem;
-    opacity: 0.9;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* Info boxes */
+/* 12) Info / success boxes */
 .info-box {
-    background: #e7f3ff;
-    border-left: 4px solid #2196F3;
-    padding: 1rem;
-    border-radius: 5px;
-    margin: 1rem 0;
+  background: #e7f3ff;
+  border-left: 4px solid #2196F3;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
 }
-
 .success-box {
-    background: #e8f5e9;
-    border-left: 4px solid #4CAF50;
-    padding: 1rem;
-    border-radius: 5px;
-    margin: 1rem 0;
+  background: #e8f5e9;
+  border-left: 4px solid #4CAF50;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
 }
 
-/* Contact card */
+/* 13) Contact card */
 .contact-card {
-    background: white;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 1.5rem;
-    margin: 1rem 0;
+  background: #fff;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.2rem;
+  margin: 1rem 0;
 }
+.contact-name { font-weight: 700; font-size: 1.05rem; color: #333; margin-bottom: .4rem; }
+.contact-info { color: #64748b; margin: .25rem 0; }
 
-.contact-name {
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: #333;
-    margin-bottom: 0.5rem;
-}
-
-.contact-info {
-    color: #666;
-    margin: 0.3rem 0;
-}
-
-/* Chat input */
-.stChatInputContainer {
-    border-top: 2px solid #e0e0e0;
-    padding-top: 1rem;
-}
-
-/* Expander */
+/* 14) Expander header */
 .streamlit-expanderHeader {
-    background: #f8f9fa;
-    border-radius: 8px;
-    font-weight: 600;
+  background: #f8f9fa !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+}
+
+/* 15) Optional: tighten container width on ultra-wide screens */
+@media (min-width: 1400px){
+  section.main > div:nth-child(1) { max-width: 1200px; margin: 0 auto; }
 }
