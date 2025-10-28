@@ -186,9 +186,11 @@
   font-weight: 600 !important;
 }
 
-/* --- White-bar fix: hide empty blocks/paragraphs -------------------------- */
+/* --- White-bar fixes ------------------------------------------------------- */
+/* Hide empty paragraphs and truly empty Streamlit blocks */
 [data-testid="stMarkdownContainer"] p:empty { display: none !important; }
 [data-testid="stVerticalBlock"]:not(:has(*)) { display: none !important; }
+/* Hide wrappers that contain only a single empty child */
 [data-testid="stVerticalBlock"]:has(> div:only-child:empty) { display: none !important; }
 
 /* Guard: if chat container has no messages, don't render a big white card */
