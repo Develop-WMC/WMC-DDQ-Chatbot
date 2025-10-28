@@ -186,6 +186,19 @@
   font-weight: 600 !important;
 }
 
+/* --- White-bar fix: hide empty blocks/paragraphs -------------------------- */
+[data-testid="stMarkdownContainer"] p:empty { display: none !important; }
+[data-testid="stVerticalBlock"]:not(:has(*)) { display: none !important; }
+[data-testid="stVerticalBlock"]:has(> div:only-child:empty) { display: none !important; }
+
+/* Guard: if chat container has no messages, don't render a big white card */
+.chat-container:not(:has([data-testid="stChatMessage"])) {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
+
 /* 15) Optional: tighten container width on ultra-wide screens */
 @media (min-width: 1400px){
   section.main > div:nth-child(1) { max-width: 1200px; margin: 0 auto; }
