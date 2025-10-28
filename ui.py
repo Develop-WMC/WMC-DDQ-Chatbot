@@ -119,8 +119,16 @@ def login_page(css_content: str | None = None, model_name: str = "Model"):
     _ensure_session_defaults()
     load_css(css_content)
 
-    # Hide any chat input skeleton on the login screen (prevents the white bar)
-    st.markdown("<style>[data-testid='stChatInput']{display:none!important}</style>", unsafe_allow_html=True)
+    # HARD HIDE any chat scaffolding on the login page to prevent the white block
+    st.markdown("""
+        <style>
+          [data-testid^='stChat']{display:none!important}
+          /* also hide empty containers right here just in case */
+          [data-testid="stVerticalBlock"]:not(:has(*)){display:none!important}
+          [data-testid="stVerticalBlock"]:has(> div:only-child:empty){display:none!important}
+          [data-testid="stMarkdownContainer"] p:empty{display:none!important}
+        </style>
+    """, unsafe_allow_html=True)
 
     st.markdown("""
         <div class="custom-header">
@@ -194,7 +202,6 @@ def chat_page(
 
 I can help you with questions about our company, compliance, IT, and more. I can also remember our conversation context for follow-up questions."""
         msgs = [{"role": "assistant", "content": welcome_message}]
-    # Drop empty messages if any
     msgs = [m for m in msgs if str(m.get("content", "")).strip()]
     st.session_state["messages"] = msgs
 
