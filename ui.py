@@ -119,16 +119,8 @@ def login_page(css_content: str | None = None, model_name: str = "Model"):
     _ensure_session_defaults()
     load_css(css_content)
 
-    # HARD HIDE any chat scaffolding on the login page to prevent the white block
-    st.markdown("""
-        <style>
-          [data-testid^='stChat']{display:none!important}
-          /* also hide empty containers right here just in case */
-          [data-testid="stVerticalBlock"]:not(:has(*)){display:none!important}
-          [data-testid="stVerticalBlock"]:has(> div:only-child:empty){display:none!important}
-          [data-testid="stMarkdownContainer"] p:empty{display:none!important}
-        </style>
-    """, unsafe_allow_html=True)
+    # Add a page-scoped root to let CSS detect "we are on login"
+    st.markdown("<div id='login-root'></div>", unsafe_allow_html=True)
 
     st.markdown("""
         <div class="custom-header">
