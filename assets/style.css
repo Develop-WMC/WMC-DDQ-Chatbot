@@ -201,6 +201,13 @@
   padding: 0 !important;
 }
 
+/* Critical: when the login root exists, hide ANY chat input shell globally */
+html:has(#login-root) [data-testid="stChatInput"],
+html:has(#login-root) [data-testid^="stChat"],
+html:has(#login-root) textarea[placeholder*="Type your question"] {
+  display: none !important;
+}
+
 /* 15) Optional: tighten container width on ultra-wide screens */
 @media (min-width: 1400px){
   section.main > div:nth-child(1) { max-width: 1200px; margin: 0 auto; }
