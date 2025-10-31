@@ -3,7 +3,7 @@
 import streamlit as st
 import pandas as pd
 from docx import Document
-from PyPDF2 import PdfReader
+from pypdf import PdfReader # CORRECTED: Changed from PyPDF2 to pypdf
 import io
 
 @st.cache_data(show_spinner="Parsing document...")
@@ -26,7 +26,7 @@ def parse_uploaded_file(uploaded_file):
     
     try:
         if file_extension == "pdf":
-            # Use PyPDF2 to extract text from each page of a PDF
+            # Use pypdf to extract text from each page of a PDF
             pdf_reader = PdfReader(uploaded_file)
             text = ""
             for page in pdf_reader.pages:
