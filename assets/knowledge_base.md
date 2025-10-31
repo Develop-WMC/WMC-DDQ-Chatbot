@@ -31,6 +31,9 @@ Answer: WMC is a SFC licensed corporation (CE No. BEC913) in Hong Kong Establish
 **Question: total headcount of the Company.**
 Answer: 18-20 ppl
 
+**Question: Please describe how the company ensures it has sufficient human and technical resources to (i) distribute ChinaAMC (HK)'s funds to investors; or (ii) act as a participating dealer.**
+Answer: We maintain a dedicated team of 18-20 full-time employees with deep industry experience. Technologically, we provide the "WMCube Platform," a robust and efficient system designed for fund distribution. This platform includes comprehensive dealing services, data feeds, and portfolio management tools. Our B2B2C model also features a portal ("Cubism") for end-investors to view their portfolios, ensuring a seamless technical experience for all parties involved.
+
 **Question: staff turnover rate.**
 Answer: average annual turnover rate is around 10 – 20%.
 
