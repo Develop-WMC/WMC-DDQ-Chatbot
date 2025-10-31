@@ -6,3 +6,4 @@ pypdf
 python-docx
 openpyxl
 pandas
+PyPDF2
