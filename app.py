@@ -7,6 +7,7 @@ from pathlib import Path
 import ui
 import llm
 import config
+import utils  # Import the new utils file
 
 # ============================================================================
 # PAGE CONFIG - Must be the first Streamlit command
@@ -19,12 +20,11 @@ st.set_page_config(
 )
 
 # ============================================================================
-# DATA LOADING AND CACHING (Now in the main app file)
+# DATA LOADING AND CACHING (No changes needed in these functions)
 # ============================================================================
 
 @st.cache_data
 def load_asset(file_path: Path) -> str:
-    """A cached function to load text-based assets."""
     try:
         return file_path.read_text(encoding="utf-8")
     except FileNotFoundError:
@@ -36,7 +36,6 @@ def load_asset(file_path: Path) -> str:
 
 @st.cache_resource
 def initialize_model(api_key: str, knowledge_base: str):
-    """Initialize Gemini model with caching for better performance."""
     try:
         if not api_key:
             st.error("⚠️ GEMINI_API_KEY not found. Please set it in your Streamlit secrets.")
@@ -74,10 +73,6 @@ def initialize_model(api_key: str, knowledge_base: str):
 
 @st.cache_data
 def parse_qa_from_kb(knowledge_base: str) -> dict:
-    """
-    Parses the knowledge base markdown file into a dictionary of
-    normalized questions and their answers.
-    """
     qa_dict = {}
     parts = knowledge_base.split("\n**Question:**")
     for part in parts[1:]:
@@ -90,13 +85,12 @@ def parse_qa_from_kb(knowledge_base: str) -> dict:
     return qa_dict
 
 # ============================================================================
-# MAIN APPLICATION LOGIC
+# MAIN APPLICATION LOGIC (MODIFIED)
 # ============================================================================
 
 def main():
     """Main function to run the Streamlit app."""
     
-    # --- Load all necessary configurations and assets ---
     try:
         api_key = st.secrets["GEMINI_API_KEY"]
     except (FileNotFoundError, KeyError):
@@ -104,14 +98,6 @@ def main():
         st.stop()
 
     css_styles = load_asset(config.ASSETS_DIR / "style.css")
-    knowledge_base = load_asset(config.ASSETS_DIR / "knowledge_base.md")
-    
-    # --- Initialize model and parse KB (these are cached) ---
-    model = initialize_model(api_key, knowledge_base)
-    qa_dict = parse_qa_from_kb(knowledge_base)
-
-    if model is None:
-        st.stop()
 
     # --- Session State Initialization ---
     if 'authenticated' not in st.session_state:
@@ -120,17 +106,62 @@ def main():
         st.session_state.username = None
     if 'messages' not in st.session_state:
         st.session_state.messages = []
-    
+    # Add session state to track the uploaded file's ID to detect changes
+    if 'uploaded_file_id' not in st.session_state:
+        st.session_state.uploaded_file_id = None
+
     # --- Page Routing ---
     if not st.session_state.authenticated:
         ui.login_page(css_styles, config.MODEL_NAME)
     else:
+        # --- Sidebar and File Upload Handling ---
+        # Render the sidebar and get the uploaded file object
+        uploaded_file = ui._render_sidebar(config.MODEL_NAME, config.GENERATION_CONFIG['temperature'])
+
+        knowledge_base = None
+        qa_dict = {}
+
+        # --- Dynamic Knowledge Base Logic ---
+        if uploaded_file is not None:
+            # If a new file is uploaded, clear old chat history
+            if st.session_state.uploaded_file_id != uploaded_file.id:
+                st.session_state.messages = []
+                st.session_state.uploaded_file_id = uploaded_file.id
+            
+            # Parse the uploaded file to get its text content
+            knowledge_base = utils.parse_uploaded_file(uploaded_file)
+            # For custom uploads, we disable the exact-match QA dictionary
+            qa_dict = {}
+        else:
+            # If no file is uploaded, fall back to the default knowledge base
+            if st.session_state.uploaded_file_id is not None:
+                st.session_state.messages = [] # Clear history when file is removed
+            st.session_state.uploaded_file_id = None
+
+            knowledge_base = load_asset(config.ASSETS_DIR / "knowledge_base.md")
+            # For the default KB, we parse the Q&A for the hybrid search
+            qa_dict = parse_qa_from_kb(knowledge_base)
+
+        # --- Initialize model (cached) ---
+        # The model will be re-initialized only if the `knowledge_base` text changes.
+        if knowledge_base:
+            model = initialize_model(api_key, knowledge_base)
+            if model is None:
+                st.error("Model could not be initialized. Please check the logs.")
+                st.stop()
+        else:
+            # This can happen if file parsing fails
+            st.warning("Could not load a knowledge base. Please upload a valid document or ensure 'knowledge_base.md' exists.")
+            st.stop()
+            
+        # --- Render the main chat page ---
         ui.chat_page(
             css_content=css_styles,
             qa_dict=qa_dict,
             model=model,
             model_name=config.MODEL_NAME,
-            temp=config.GENERATION_CONFIG['temperature']
+            temp=config.GENERATION_CONFIG['temperature'],
+            uploaded_file=uploaded_file # Pass the file object to the UI
         )
 
 if __name__ == "__main__":
