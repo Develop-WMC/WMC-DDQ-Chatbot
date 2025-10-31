@@ -3,145 +3,165 @@
 import streamlit as st
 import google.generativeai as genai
 import os
-from utils import parse_uploaded_file # We assume utils.py is now correct
+import PyPDF2
+import docx
+import openpyxl
 
 # --- Page Configuration ---
+# Sets the title and icon of the browser tab and configures the layout.
 st.set_page_config(
     page_title="WMC Due Diligence Chatbot",
-    page_icon="🤖",
+    page_icon="📝",
     layout="wide"
 )
 
-# --- Main App Logic ---
+# --- Helper Function to Parse Files ---
+def parse_uploaded_file(uploaded_file):
+    """
+    Parses the content of an uploaded file (PDF, DOCX, XLSX) and returns it as a single string.
+    """
+    text = ""
+    file_type = uploaded_file.type
+    try:
+        if file_type == "application/pdf":
+            # Read PDF content
+            pdf_reader = PyPDF2.PdfReader(uploaded_file)
+            for page in pdf_reader.pages:
+                text += page.extract_text() or ""
+        elif file_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+            # Read DOCX content
+            doc = docx.Document(uploaded_file)
+            for para in doc.paragraphs:
+                text += para.text + "\n"
+        elif file_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            # Read XLSX content
+            workbook = openpyxl.load_workbook(uploaded_file)
+            for sheet_name in workbook.sheetnames:
+                sheet = workbook[sheet_name]
+                for row in sheet.iter_rows():
+                    row_text = "\t".join([str(cell.value or "") for cell in row])
+                    text += row_text + "\n"
+    except Exception as e:
+        st.error(f"Error parsing file '{uploaded_file.name}': {e}")
+        return None
+    return text
+
+# --- Main Application Logic ---
 def main():
     """
     Main function to run the Streamlit chatbot application.
     """
+    # --- UI: Title and Description ---
     st.title("WMC Due Diligence Chatbot 📝")
     st.write("Upload your due diligence documents (PDF, DOCX, XLSX) and ask questions.")
 
-    # --- Sidebar for API Key and File Upload ---
+    # --- UI: Sidebar for Configuration and Upload ---
     with st.sidebar:
         st.header("Configuration")
 
-        # API Key Management using Streamlit Secrets for deployment
-        # or manual input for local development.
-        if 'GOOGLE_API_KEY' in st.secrets:
-            api_key = st.secrets['GOOGLE_API_KEY']
-            st.success("API key found in secrets.", icon="✅")
-        else:
-            api_key = st.text_input("Enter your Google API Key:", type="password")
-            if api_key:
-                st.success("API key entered.", icon="🔑")
+        # --- API Key Handling ---
+        # This is the standard way to handle secrets in Streamlit.
+        # 1. It first checks Streamlit's built-in secrets manager (st.secrets).
+        # 2. If the key is not found there, it provides the manual text input as a fallback.
+        # This allows the app to work both locally (with manual input) and when deployed (using secrets).
+        try:
+            # Check for the key in Streamlit's secrets
+            api_key = st.secrets.get("GOOGLE_API_KEY")
+        except (AttributeError, FileNotFoundError):
+            # Fallback for local execution where st.secrets might not be configured
+            api_key = None
 
-        # File Uploader Widget
+        if not api_key:
+            # If the key is not in st.secrets, show the manual input field
+            api_key = st.text_input(
+                "Enter your Google API Key:",
+                type="password",
+                help="You can get your API key from Google AI Studio."
+            )
+
         st.header("Document Upload")
         uploaded_file = st.file_uploader(
-            "Upload a document",
+            "Drag and drop file here",
             type=["pdf", "docx", "xlsx"],
-            help="Supports PDF, Word (DOCX), and Excel (XLSX) files."
+            label_visibility="collapsed",
+            help="Limit 200MB per file • PDF, DOCX, XLSX"
         )
+        st.caption("Limit 200MB per file • PDF, DOCX, XLSX")
 
-    # --- Initial Checks ---
-    # Stop the app if the API key is not provided.
+    # --- Core Logic: Check for API Key ---
     if not api_key:
         st.warning("Please enter your Google API Key in the sidebar to proceed.")
-        st.stop()
+        st.stop() # Stops the app execution until the key is provided
 
-    # Configure the generative model.
+    # --- Configure Generative AI Model ---
     try:
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel('gemini-pro')
     except Exception as e:
-        st.error(f"Error configuring the generative model: {e}")
+        st.error(f"Failed to configure Google AI: {e}")
         st.stop()
 
-    # --- Session State Initialization ---
-    # Initialize chat history if it doesn't exist.
+    # --- Initialize Session State for Chat History ---
     if "messages" not in st.session_state:
-        st.session_state.messages = [
-            {"role": "assistant", "content": "Hello! I am your Due Diligence Chatbot. Upload a document and I can answer your questions about it."}
-        ]
-    # Initialize keys for tracking the uploaded file and its content.
-    if "uploaded_file_id" not in st.session_state:
-        st.session_state.uploaded_file_id = None
+        st.session_state.messages = []
     if "document_text" not in st.session_state:
         st.session_state.document_text = None
 
-    # --- CORRECTED: File Processing and State Management ---
-    # This block robustly handles file addition, removal, and replacement.
+    # --- Process Uploaded File ---
+    if uploaded_file:
+        # Process the file only if it's new
+        if st.session_state.get("last_uploaded_filename") != uploaded_file.name:
+            with st.spinner(f"Processing '{uploaded_file.name}'..."):
+                document_text = parse_uploaded_file(uploaded_file)
+                st.session_state.document_text = document_text
+                st.session_state.last_uploaded_filename = uploaded_file.name
+                st.session_state.messages = [] # Reset chat on new file upload
+                st.toast(f"✅ Document '{uploaded_file.name}' is ready.")
     
-    # Safely get the ID of the current file, or None if no file is uploaded.
-    # getattr(object, 'attribute', default) prevents an AttributeError.
-    current_file_id = getattr(uploaded_file, 'id', None)
+    # --- Display Chat Interface ---
+    if not st.session_state.messages:
+        st.session_state.messages.append(
+            {"role": "assistant", "content": "Hello! Upload a document and ask me anything about its contents."}
+        )
 
-    # Check if the file has changed.
-    if st.session_state.uploaded_file_id != current_file_id:
-        # Update the file ID in the session state.
-        st.session_state.uploaded_file_id = current_file_id
-
-        if uploaded_file is not None:
-            # A new file has been uploaded or an existing one was replaced.
-            st.session_state.document_text = parse_uploaded_file(uploaded_file)
-            # Reset chat history because the document context has changed.
-            st.session_state.messages = [
-                {"role": "assistant", "content": f"Document '{uploaded_file.name}' has been loaded. How can I help you?"}
-            ]
-            st.toast(f"✅ Successfully parsed '{uploaded_file.name}'")
-            st.rerun() # Rerun the script to immediately reflect the changes in the UI.
-        else:
-            # The file has been removed by the user.
-            st.session_state.document_text = None
-            # Reset chat history as the context is now gone.
-            st.session_state.messages = [
-                {"role": "assistant", "content": "Hello! I am your Due Diligence Chatbot. Upload a document and I can answer your questions about it."}
-            ]
-            st.toast("ℹ️ Document removed. Chat has been reset.")
-            st.rerun() # Rerun to update the UI.
-
-    # --- Display Chat History ---
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    # --- Handle User Input ---
+    # --- Handle User Input and Generate Response ---
     if prompt := st.chat_input("Ask a question about the document..."):
-        # Add user message to chat history and display it.
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        # Check if a document is uploaded before attempting to answer.
         if st.session_state.document_text is None:
             with st.chat_message("assistant"):
-                st.warning("Please upload a document before asking questions.")
+                st.warning("Please upload a document first.")
             st.stop()
 
-        # Prepare the prompt for the language model.
-        with st.spinner("Thinking..."):
-            try:
-                full_prompt = f"""
-                You are a helpful assistant specialized in analyzing due diligence documents.
-                Based on the following document content, please answer the user's question.
-
-                DOCUMENT CONTENT:
-                ---
-                {st.session_state.document_text}
-                ---
-
-                USER'S QUESTION:
-                {prompt}
-                """
-                response = model.generate_content(full_prompt)
-                assistant_response = response.text
-
-            except Exception as e:
-                assistant_response = f"An error occurred while generating the response: {e}"
-
-        # Add assistant response to chat history and display it.
-        st.session_state.messages.append({"role": "assistant", "content": assistant_response})
         with st.chat_message("assistant"):
-            st.markdown(assistant_response)
+            with st.spinner("Thinking..."):
+                try:
+                    # Construct a detailed prompt for the model
+                    full_prompt = f"""
+                    Based on the content of the document provided below, answer the user's question.
+                    Analyze the text thoroughly to provide an accurate response.
+
+                    --- DOCUMENT CONTENT ---
+                    {st.session_state.document_text}
+                    ---
+
+                    QUESTION:
+                    {prompt}
+                    """
+                    response = model.generate_content(full_prompt)
+                    assistant_response = response.text
+                    st.markdown(assistant_response)
+                except Exception as e:
+                    st.error(f"An error occurred: {e}")
+                    assistant_response = "Sorry, I encountered an error."
+
+        st.session_state.messages.append({"role": "assistant", "content": assistant_response})
 
 
 if __name__ == "__main__":
