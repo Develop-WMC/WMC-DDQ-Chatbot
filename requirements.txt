@@ -1,5 +1,8 @@
+# requirements.txt
+
 streamlit==1.31.0
 google-generativeai
 pypdf
 python-docx
 openpyxl
+pandas
