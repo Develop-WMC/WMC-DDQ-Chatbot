@@ -2,167 +2,147 @@
 
 import streamlit as st
 import google.generativeai as genai
-import re
-from pathlib import Path
-import ui
-import llm
-import config
-import utils  # Import the new utils file
+import os
+from utils import parse_uploaded_file # We assume utils.py is now correct
 
-# ============================================================================
-# PAGE CONFIG - Must be the first Streamlit command
-# ============================================================================
+# --- Page Configuration ---
 st.set_page_config(
-    page_title="WMC DDQ Portal",
-    page_icon="🏢",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    page_title="WMC Due Diligence Chatbot",
+    page_icon="🤖",
+    layout="wide"
 )
 
-# ============================================================================
-# DATA LOADING AND CACHING (No changes needed in these functions)
-# ============================================================================
-
-@st.cache_data
-def load_asset(file_path: Path) -> str:
-    try:
-        return file_path.read_text(encoding="utf-8")
-    except FileNotFoundError:
-        st.error(f"🚨 Asset file not found at: {file_path}. Please make sure it exists.")
-        st.stop()
-    except Exception as e:
-        st.error(f"🚨 An error occurred while loading asset {file_path}: {e}")
-        st.stop()
-
-@st.cache_resource
-def initialize_model(api_key: str, knowledge_base: str):
-    try:
-        if not api_key:
-            st.error("⚠️ GEMINI_API_KEY not found. Please set it in your Streamlit secrets.")
-            return None
-        
-        genai.configure(api_key=api_key)
-        
-        system_instruction = f"""You are a world-class Due Diligence Assistant for Wealth Management Cube Limited (WMC). Your task is to answer user questions based ONLY on the provided knowledge base.
-
-        【KNOWLEDGE BASE - START】
-        {knowledge_base}
-        【KNOWLEDGE BASE - END】
-
-        【CRITICAL RULES OF ENGAGEMENT】
-        1.  **Analyze Context:** Always consider the entire conversation history to understand the user's latest question. A follow-up question like "what about them?" refers to the previous topic.
-        2.  **Knowledge is Limited:** Your knowledge is strictly confined to the text within the KNOWLEDGE BASE. Do not use any external information or make assumptions.
-        3.  **Handle Vague Information Intelligently:** This is the most important rule. If the knowledge base provides a general answer (e.g., "reviewed periodically") and the user asks for a more specific detail (e.g., "is that once a year?"), you must:
-            a. First, state the information you DO have from the knowledge base (e.g., "The document states it is reviewed 'periodically'.").
-            b. Second, explicitly state that the specific detail the user is asking for is NOT available (e.g., "...however, it does not specify a more exact frequency like 'once a year'.").
-            c. DO NOT just say "I don't have that information." You must explain what you know and what you don't know.
-        4.  **Handle "Upon Request" Information:** If the knowledge base says something "will be provided upon request" (like an ownership chart), and the user asks for it, you must explain that the document states it needs to be requested and is not available within your current dataset.
-        5.  **Absolute Fallback:** If, and only if, you genuinely cannot find any relevant information for the user's question in the entire knowledge base after analyzing the context, then use the exact fallback phrase: "I don't have that specific information in our DDQ documents. Please contact our Compliance Officer, Peter Lau, at peterlau@wmcubehk.com or +852 3854 6419 for more details."
-        """
-        
-        model = genai.GenerativeModel(
-            model_name=config.MODEL_NAME,
-            generation_config=config.GENERATION_CONFIG,
-            safety_settings=config.SAFETY_SETTINGS,
-            system_instruction=system_instruction
-        )
-        return model
-    except Exception as e:
-        st.error(f"❌ Failed to initialize model: {e}")
-        return None
-
-@st.cache_data
-def parse_qa_from_kb(knowledge_base: str) -> dict:
-    qa_dict = {}
-    parts = knowledge_base.split("\n**Question:**")
-    for part in parts[1:]:
-        qa_split = part.split("\n**Answer:**")
-        if len(qa_split) == 2:
-            question = qa_split[0].strip()
-            answer = qa_split[1].strip()
-            normalized_question = re.sub(r'[?.,]$', '', question.lower().strip())
-            qa_dict[normalized_question] = answer
-    return qa_dict
-
-# ============================================================================
-# MAIN APPLICATION LOGIC (MODIFIED)
-# ============================================================================
-
+# --- Main App Logic ---
 def main():
-    """Main function to run the Streamlit app."""
-    
-    try:
-        api_key = st.secrets["GEMINI_API_KEY"]
-    except (FileNotFoundError, KeyError):
-        st.error("🚨 GEMINI_API_KEY not found in st.secrets. Please add it to your .streamlit/secrets.toml file.")
+    """
+    Main function to run the Streamlit chatbot application.
+    """
+    st.title("WMC Due Diligence Chatbot 📝")
+    st.write("Upload your due diligence documents (PDF, DOCX, XLSX) and ask questions.")
+
+    # --- Sidebar for API Key and File Upload ---
+    with st.sidebar:
+        st.header("Configuration")
+
+        # API Key Management using Streamlit Secrets for deployment
+        # or manual input for local development.
+        if 'GOOGLE_API_KEY' in st.secrets:
+            api_key = st.secrets['GOOGLE_API_KEY']
+            st.success("API key found in secrets.", icon="✅")
+        else:
+            api_key = st.text_input("Enter your Google API Key:", type="password")
+            if api_key:
+                st.success("API key entered.", icon="🔑")
+
+        # File Uploader Widget
+        st.header("Document Upload")
+        uploaded_file = st.file_uploader(
+            "Upload a document",
+            type=["pdf", "docx", "xlsx"],
+            help="Supports PDF, Word (DOCX), and Excel (XLSX) files."
+        )
+
+    # --- Initial Checks ---
+    # Stop the app if the API key is not provided.
+    if not api_key:
+        st.warning("Please enter your Google API Key in the sidebar to proceed.")
         st.stop()
 
-    css_styles = load_asset(config.ASSETS_DIR / "style.css")
+    # Configure the generative model.
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-pro')
+    except Exception as e:
+        st.error(f"Error configuring the generative model: {e}")
+        st.stop()
 
     # --- Session State Initialization ---
-    if 'authenticated' not in st.session_state:
-        st.session_state.authenticated = False
-    if 'username' not in st.session_state:
-        st.session_state.username = None
-    if 'messages' not in st.session_state:
-        st.session_state.messages = []
-    # Add session state to track the uploaded file's ID to detect changes
-    if 'uploaded_file_id' not in st.session_state:
+    # Initialize chat history if it doesn't exist.
+    if "messages" not in st.session_state:
+        st.session_state.messages = [
+            {"role": "assistant", "content": "Hello! I am your Due Diligence Chatbot. Upload a document and I can answer your questions about it."}
+        ]
+    # Initialize keys for tracking the uploaded file and its content.
+    if "uploaded_file_id" not in st.session_state:
         st.session_state.uploaded_file_id = None
+    if "document_text" not in st.session_state:
+        st.session_state.document_text = None
 
-    # --- Page Routing ---
-    if not st.session_state.authenticated:
-        ui.login_page(css_styles, config.MODEL_NAME)
-    else:
-        # --- Sidebar and File Upload Handling ---
-        # Render the sidebar and get the uploaded file object
-        uploaded_file = ui._render_sidebar(config.MODEL_NAME, config.GENERATION_CONFIG['temperature'])
+    # --- CORRECTED: File Processing and State Management ---
+    # This block robustly handles file addition, removal, and replacement.
+    
+    # Safely get the ID of the current file, or None if no file is uploaded.
+    # getattr(object, 'attribute', default) prevents an AttributeError.
+    current_file_id = getattr(uploaded_file, 'id', None)
 
-        knowledge_base = None
-        qa_dict = {}
+    # Check if the file has changed.
+    if st.session_state.uploaded_file_id != current_file_id:
+        # Update the file ID in the session state.
+        st.session_state.uploaded_file_id = current_file_id
 
-        # --- Dynamic Knowledge Base Logic ---
         if uploaded_file is not None:
-            # If a new file is uploaded, clear old chat history
-            if st.session_state.uploaded_file_id != uploaded_file.id:
-                st.session_state.messages = []
-                st.session_state.uploaded_file_id = uploaded_file.id
-            
-            # Parse the uploaded file to get its text content
-            knowledge_base = utils.parse_uploaded_file(uploaded_file)
-            # For custom uploads, we disable the exact-match QA dictionary
-            qa_dict = {}
+            # A new file has been uploaded or an existing one was replaced.
+            st.session_state.document_text = parse_uploaded_file(uploaded_file)
+            # Reset chat history because the document context has changed.
+            st.session_state.messages = [
+                {"role": "assistant", "content": f"Document '{uploaded_file.name}' has been loaded. How can I help you?"}
+            ]
+            st.toast(f"✅ Successfully parsed '{uploaded_file.name}'")
+            st.rerun() # Rerun the script to immediately reflect the changes in the UI.
         else:
-            # If no file is uploaded, fall back to the default knowledge base
-            if st.session_state.uploaded_file_id is not None:
-                st.session_state.messages = [] # Clear history when file is removed
-            st.session_state.uploaded_file_id = None
+            # The file has been removed by the user.
+            st.session_state.document_text = None
+            # Reset chat history as the context is now gone.
+            st.session_state.messages = [
+                {"role": "assistant", "content": "Hello! I am your Due Diligence Chatbot. Upload a document and I can answer your questions about it."}
+            ]
+            st.toast("ℹ️ Document removed. Chat has been reset.")
+            st.rerun() # Rerun to update the UI.
 
-            knowledge_base = load_asset(config.ASSETS_DIR / "knowledge_base.md")
-            # For the default KB, we parse the Q&A for the hybrid search
-            qa_dict = parse_qa_from_kb(knowledge_base)
+    # --- Display Chat History ---
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
-        # --- Initialize model (cached) ---
-        # The model will be re-initialized only if the `knowledge_base` text changes.
-        if knowledge_base:
-            model = initialize_model(api_key, knowledge_base)
-            if model is None:
-                st.error("Model could not be initialized. Please check the logs.")
-                st.stop()
-        else:
-            # This can happen if file parsing fails
-            st.warning("Could not load a knowledge base. Please upload a valid document or ensure 'knowledge_base.md' exists.")
+    # --- Handle User Input ---
+    if prompt := st.chat_input("Ask a question about the document..."):
+        # Add user message to chat history and display it.
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # Check if a document is uploaded before attempting to answer.
+        if st.session_state.document_text is None:
+            with st.chat_message("assistant"):
+                st.warning("Please upload a document before asking questions.")
             st.stop()
-            
-        # --- Render the main chat page ---
-        ui.chat_page(
-            css_content=css_styles,
-            qa_dict=qa_dict,
-            model=model,
-            model_name=config.MODEL_NAME,
-            temp=config.GENERATION_CONFIG['temperature'],
-            uploaded_file=uploaded_file # Pass the file object to the UI
-        )
+
+        # Prepare the prompt for the language model.
+        with st.spinner("Thinking..."):
+            try:
+                full_prompt = f"""
+                You are a helpful assistant specialized in analyzing due diligence documents.
+                Based on the following document content, please answer the user's question.
+
+                DOCUMENT CONTENT:
+                ---
+                {st.session_state.document_text}
+                ---
+
+                USER'S QUESTION:
+                {prompt}
+                """
+                response = model.generate_content(full_prompt)
+                assistant_response = response.text
+
+            except Exception as e:
+                assistant_response = f"An error occurred while generating the response: {e}"
+
+        # Add assistant response to chat history and display it.
+        st.session_state.messages.append({"role": "assistant", "content": assistant_response})
+        with st.chat_message("assistant"):
+            st.markdown(assistant_response)
+
 
 if __name__ == "__main__":
     main()
