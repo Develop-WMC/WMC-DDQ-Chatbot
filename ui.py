@@ -5,9 +5,9 @@ import json
 from datetime import datetime
 import html
 from pathlib import Path
-import llm  # your existing module providing get_response(prompt, messages, qa_dict, model)
+import llm
 
-# --- CSS loader --------------------------------------------------------------
+# --- CSS loader (No changes needed here) ---
 
 FALLBACK_CSS = """
 /* Minimal fallback in case style.css is missing */
@@ -17,27 +17,20 @@ FALLBACK_CSS = """
 """
 
 def load_css(css_content: str | None = None):
-    """Inject CSS. If style.css exists, inject it LAST so it wins the cascade."""
     if css_content:
         st.markdown(f"<style>{css_content}</style>", unsafe_allow_html=True)
-
     css_path = Path("style.css")
     if css_path.exists():
         raw = css_path.read_text(encoding="utf-8")
-        stamp = datetime.utcnow().isoformat() + "Z"  # cache-buster
+        stamp = datetime.utcnow().isoformat() + "Z"
         st.markdown(f"<style>{raw}\n/* build:{stamp} */</style>", unsafe_allow_html=True)
     else:
         st.markdown(f"<style>{FALLBACK_CSS}</style>", unsafe_allow_html=True)
 
-# --- Utilities ---------------------------------------------------------------
+# --- Utilities (No changes needed here) ---
 
 def save_conversation_log(username: str, question: str, answer: str):
-    entry = {
-        "timestamp": datetime.utcnow().isoformat() + "Z",
-        "username": username,
-        "question": question,
-        "answer": answer,
-    }
+    entry = {"timestamp": datetime.utcnow().isoformat() + "Z", "username": username, "question": question, "answer": answer}
     try:
         with open("conversation_logs.jsonl", "a", encoding="utf-8") as f:
             f.write(json.dumps(entry, ensure_ascii=False) + "\n")
@@ -52,14 +45,28 @@ def _ensure_session_defaults():
     st.session_state.setdefault("username", None)
     st.session_state.setdefault("messages", [])
 
-# --- Sidebar -----------------------------------------------------------------
+# --- Sidebar (MODIFIED) ---
 
 def _render_sidebar(model_name: str, temp: float):
+    """
+    Renders the sidebar. It now includes the file uploader and returns the uploaded file object.
+    """
     with st.sidebar:
+        st.markdown("### 📥 Upload Your Own Document")
+        st.info("Extend my knowledge by uploading a PDF, DOCX, or XLSX file. I will use it to answer your questions.")
+        
+        # ADDED: File uploader widget
+        uploaded_file = st.file_uploader(
+            "Upload Document",
+            type=["pdf", "docx", "xlsx"],
+            label_visibility="collapsed"
+        )
+        
+        st.markdown("---")
+        
         st.markdown("### 📊 Session Info")
         msgs = st.session_state.get("messages", [])
         questions_asked = len([m for m in msgs if m.get("role") == "user"])
-
         st.markdown(f"""
             <div class="metric-card">
                 <div class="metric-value">{questions_asked}</div>
@@ -97,41 +104,30 @@ def _render_sidebar(model_name: str, temp: float):
                 try:
                     with open("conversation_logs.jsonl", "r", encoding="utf-8") as f:
                         logs = f.read()
-                    st.download_button(
-                        "⬇️ Download Logs (JSONL)",
-                        logs,
-                        "conversation_logs.jsonl",
-                        "application/json",
-                        use_container_width=True,
-                    )
+                    st.download_button("⬇️ Download Logs (JSONL)", logs, "conversation_logs.jsonl", "application/json", use_container_width=True)
                 except FileNotFoundError:
                     st.warning("No logs available yet.")
+    
+    # ADDED: Return the uploaded file object
+    return uploaded_file
 
-# --- Pages -------------------------------------------------------------------
+# --- Pages (No changes needed here, but note how the sidebar function is called) ---
 
 def login_page(css_content: str | None = None, model_name: str = "Model"):
-    """Render the login page (demo auth: any non-empty user/pass)."""
     _ensure_session_defaults()
     load_css(css_content)
-
-    # Marker to allow login-scoped CSS (used to style the “white bar” as decoration)
     st.markdown("<div id='login-root'></div>", unsafe_allow_html=True)
-
     st.markdown("""
         <div class="custom-header">
             <div class="company-name">🏢 Wealth Management Cube</div>
             <div class="company-tagline">Due Diligence Information Portal</div>
         </div>
     """, unsafe_allow_html=True)
-
-    # Decorative divider we control (independent of whatever Streamlit renders)
     st.markdown("<div class='login-deco'></div>", unsafe_allow_html=True)
-
     _, col2, _ = st.columns([1, 2, 1])
     with col2:
         st.markdown('<div class="login-container">', unsafe_allow_html=True)
         st.markdown('<div class="login-title">🔐 Secure Login (Demo)</div>', unsafe_allow_html=True)
-
         with st.form("login_form"):
             username = st.text_input("Username", placeholder="Enter any username", key="login_user")
             password = st.text_input("Password", type="password", placeholder="Enter any password", key="login_pass")
@@ -143,14 +139,11 @@ def login_page(css_content: str | None = None, model_name: str = "Model"):
                     st.rerun()
                 else:
                     st.error("❌ Please enter a username and password.")
-
         st.markdown('</div>', unsafe_allow_html=True)
-
         with st.expander("ℹ️ Demo Access Info"):
             st.info("In this demo mode, you can enter any non-empty username and password to log in.")
-
         st.caption(f"🔒 Secure connection • Powered by {model_name}")
-        st.caption("UI css build: 2025-10-28")  # marker to confirm new build loads
+        st.caption("UI css build: 2025-10-28")
 
 def chat_page(
     css_content: str | None = None,
@@ -158,12 +151,14 @@ def chat_page(
     model=None,
     model_name: str = "Model",
     temp: float = 0.2,
+    uploaded_file=None # MODIFIED: Receive uploaded_file object
 ):
-    """Render the chat interface."""
     _ensure_session_defaults()
     load_css(css_content)
-    _render_sidebar(model_name, temp)
-
+    
+    # The sidebar is now rendered in app.py to get the file object early.
+    # We just display the chat interface here.
+    
     col1, col2 = st.columns([4, 1])
     with col1:
         st.markdown("""
@@ -182,14 +177,16 @@ def chat_page(
     username_safe = _safe_html(st.session_state.get("username") or "")
     st.markdown(f"""<div class="success-box">🟢 Logged in as: <strong>{username_safe}</strong></div>""", unsafe_allow_html=True)
 
-    # Chat container
-    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+    # ADDED: Display a message indicating which knowledge base is being used.
+    if uploaded_file:
+        st.success(f"✅ Now answering questions based on the uploaded file: **{uploaded_file.name}**")
+    else:
+        st.info("ℹ️ Answering questions based on the default WMC DDQ document. Upload a file in the sidebar to switch context.")
 
+    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
     msgs = st.session_state.get("messages", [])
     if not msgs:
-        welcome_message = """👋 **Welcome to the WMC Due Diligence Portal!**
-
-I can help you with questions about our company, compliance, IT, and more. I can also remember our conversation context for follow-up questions."""
+        welcome_message = "👋 **Welcome to the WMC Due Diligence Portal!**\n\nI can help you with questions about our company, compliance, IT, and more. I can also remember our conversation context for follow-up questions."
         msgs = [{"role": "assistant", "content": welcome_message}]
     msgs = [m for m in msgs if str(m.get("content", "")).strip()]
     st.session_state["messages"] = msgs
@@ -203,7 +200,6 @@ I can help you with questions about our company, compliance, IT, and more. I can
         st.session_state["messages"].append({"role": "user", "content": prompt})
         with st.chat_message("user", avatar="👤"):
             st.markdown(prompt)
-
         with st.chat_message("assistant", avatar="🤖"):
             with st.spinner("🔍 Thinking..."):
                 try:
@@ -211,7 +207,6 @@ I can help you with questions about our company, compliance, IT, and more. I can
                 except Exception as e:
                     response = f"抱歉，生成回答时出现问题：{e}"
                 st.markdown(response)
-
         st.session_state["messages"].append({"role": "assistant", "content": response})
         save_conversation_log(st.session_state.get("username") or "unknown", prompt, response)
 
