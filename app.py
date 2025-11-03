@@ -72,24 +72,19 @@ def initialize_model(api_key: str, knowledge_base: str):
         st.error(f"❌ Failed to initialize model: {e}")
         return None
 
-### MODIFICATION ###: Renamed and generalized the parsing function.
 @st.cache_data
 def parse_qa_from_markdown(knowledge_base_content: str) -> dict:
     """
     Parses a knowledge base string in Markdown format into a dictionary of
-    normalized questions and their answers. It handles multi-line answers.
+    normalized questions and their answers.
     """
     qa_dict = {}
-    # Split the content by the question marker. This ignores anything before the first question.
     parts = knowledge_base_content.split("\n**Question:**")
     for part in parts[1:]:
-        # Split each part into question and answer. The answer marker is the delimiter.
         qa_split = part.split("\nAnswer:")
         if len(qa_split) == 2:
             question = qa_split[0].strip()
             answer = qa_split[1].strip()
-            
-            # Normalize the question to use as a dictionary key: lowercase and remove trailing punctuation.
             normalized_question = re.sub(r'[?.,]$', '', question.lower().strip())
             qa_dict[normalized_question] = answer
     return qa_dict
@@ -109,6 +104,7 @@ def main():
 
     css_styles = load_asset(config.ASSETS_DIR / "style.css")
     
+    # Initialize session state variables
     if 'authenticated' not in st.session_state:
         st.session_state.authenticated = False
     if 'username' not in st.session_state:
@@ -119,50 +115,43 @@ def main():
     if not st.session_state.authenticated:
         ui.login_page(css_styles, config.MODEL_NAME)
     else:
-        ### MODIFICATION ###: Updated the sidebar to accept Markdown files.
         st.sidebar.title("Knowledge Base Options")
         uploaded_file = st.sidebar.file_uploader(
-            "Upload Knowledge Base File",
+            "Upload Knowledge Base (Current Session)",
             type=["md", "txt"],
-            help="Upload a Markdown (.md) or Text (.txt) file with the Q&A knowledge base."
+            help="Upload a file to use as the knowledge base for this session only."
         )
 
-        knowledge_base_string = ""
-        qa_dict = {}
-
-        ### MODIFICATION ###: Updated the logic to handle uploaded text/markdown files.
-        if uploaded_file is not None:
-            # If a file is uploaded, use it as the knowledge base
-            st.sidebar.success("✅ Knowledge base loaded successfully from file!")
-            
-            # Read the content of the uploaded file as a string
-            knowledge_base_string = uploaded_file.getvalue().decode("utf-8")
-            
-            # Parse the string content to create the Q&A dictionary
-            qa_dict = parse_qa_from_markdown(knowledge_base_string)
-            
-            if not qa_dict:
-                st.warning("⚠️ The uploaded file could not be parsed or is empty. Falling back to the default knowledge base.")
-                # Fallback to default if parsing fails
-                knowledge_base_string = load_asset(config.ASSETS_DIR / "knowledge_base.md")
-                qa_dict = parse_qa_from_markdown(knowledge_base_string)
-        else:
-            # Otherwise, use the default markdown file
-            st.sidebar.info("ℹ️ Using the default knowledge base. Upload a file to switch.")
-            knowledge_base_string = load_asset(config.ASSETS_DIR / "knowledge_base.md")
-            qa_dict = parse_qa_from_markdown(knowledge_base_string)
+        # This logic correctly uses st.session_state to persist the KB for the session
         
-        # Initialize the model. This will only re-run if `knowledge_base_string` changes.
-        model = initialize_model(api_key, knowledge_base_string)
+        # 1. If a new file is uploaded, update the session state.
+        if uploaded_file is not None:
+            st.sidebar.success("✅ Knowledge base loaded from file for this session!")
+            st.session_state.knowledge_base_string = uploaded_file.getvalue().decode("utf-8")
+            st.session_state.qa_dict = parse_qa_from_markdown(st.session_state.knowledge_base_string)
+            
+            if not st.session_state.qa_dict:
+                st.warning("⚠️ Uploaded file was empty or not in the correct format.")
+                del st.session_state.knowledge_base_string
+                del st.session_state.qa_dict
+
+        # 2. If no knowledge base is in the session state yet, load the default one.
+        if 'knowledge_base_string' not in st.session_state:
+            st.sidebar.info("ℹ️ Using the default knowledge base.")
+            st.session_state.knowledge_base_string = load_asset(config.ASSETS_DIR / "knowledge_base.md")
+            st.session_state.qa_dict = parse_qa_from_markdown(st.session_state.knowledge_base_string)
+
+        # 3. Initialize the model using the knowledge base stored in the session state.
+        model = initialize_model(api_key, st.session_state.knowledge_base_string)
 
         if model is None:
             st.error("Could not initialize the AI model. The application cannot proceed.")
             st.stop()
 
-        # Render the chat page with the loaded data
+        # 4. Render the chat page using data from the session state.
         ui.chat_page(
             css_content=css_styles,
-            qa_dict=qa_dict,
+            qa_dict=st.session_state.qa_dict,
             model=model,
             model_name=config.MODEL_NAME,
             temp=config.GENERATION_CONFIG['temperature']
