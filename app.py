@@ -2,167 +2,136 @@
 
 import streamlit as st
 import google.generativeai as genai
-import os
-import PyPDF2
-import docx
-import openpyxl
+import re
+from pathlib import Path
+import ui
+import llm
+import config
 
-# --- Page Configuration ---
-# Sets the title and icon of the browser tab and configures the layout.
+# ============================================================================
+# PAGE CONFIG - Must be the first Streamlit command
+# ============================================================================
 st.set_page_config(
-    page_title="WMC Due Diligence Chatbot",
-    page_icon="📝",
-    layout="wide"
+    page_title="WMC DDQ Portal",
+    page_icon="🏢",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-# --- Helper Function to Parse Files ---
-def parse_uploaded_file(uploaded_file):
-    """
-    Parses the content of an uploaded file (PDF, DOCX, XLSX) and returns it as a single string.
-    """
-    text = ""
-    file_type = uploaded_file.type
+# ============================================================================
+# DATA LOADING AND CACHING (Now in the main app file)
+# ============================================================================
+
+@st.cache_data
+def load_asset(file_path: Path) -> str:
+    """A cached function to load text-based assets."""
     try:
-        if file_type == "application/pdf":
-            # Read PDF content
-            pdf_reader = PyPDF2.PdfReader(uploaded_file)
-            for page in pdf_reader.pages:
-                text += page.extract_text() or ""
-        elif file_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-            # Read DOCX content
-            doc = docx.Document(uploaded_file)
-            for para in doc.paragraphs:
-                text += para.text + "\n"
-        elif file_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-            # Read XLSX content
-            workbook = openpyxl.load_workbook(uploaded_file)
-            for sheet_name in workbook.sheetnames:
-                sheet = workbook[sheet_name]
-                for row in sheet.iter_rows():
-                    row_text = "\t".join([str(cell.value or "") for cell in row])
-                    text += row_text + "\n"
+        return file_path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        st.error(f"🚨 Asset file not found at: {file_path}. Please make sure it exists.")
+        st.stop()
     except Exception as e:
-        st.error(f"Error parsing file '{uploaded_file.name}': {e}")
-        return None
-    return text
-
-# --- Main Application Logic ---
-def main():
-    """
-    Main function to run the Streamlit chatbot application.
-    """
-    # --- UI: Title and Description ---
-    st.title("WMC Due Diligence Chatbot 📝")
-    st.write("Upload your due diligence documents (PDF, DOCX, XLSX) and ask questions.")
-
-    # --- UI: Sidebar for Configuration and Upload ---
-    with st.sidebar:
-        st.header("Configuration")
-
-        # --- API Key Handling ---
-        # This is the standard way to handle secrets in Streamlit.
-        # 1. It first checks Streamlit's built-in secrets manager (st.secrets).
-        # 2. If the key is not found there, it provides the manual text input as a fallback.
-        # This allows the app to work both locally (with manual input) and when deployed (using secrets).
-        try:
-            # Check for the key in Streamlit's secrets
-            api_key = st.secrets.get("GOOGLE_API_KEY")
-        except (AttributeError, FileNotFoundError):
-            # Fallback for local execution where st.secrets might not be configured
-            api_key = None
-
-        if not api_key:
-            # If the key is not in st.secrets, show the manual input field
-            api_key = st.text_input(
-                "Enter your Google API Key:",
-                type="password",
-                help="You can get your API key from Google AI Studio."
-            )
-
-        st.header("Document Upload")
-        uploaded_file = st.file_uploader(
-            "Drag and drop file here",
-            type=["pdf", "docx", "xlsx"],
-            label_visibility="collapsed",
-            help="Limit 200MB per file • PDF, DOCX, XLSX"
-        )
-        st.caption("Limit 200MB per file • PDF, DOCX, XLSX")
-
-    # --- Core Logic: Check for API Key ---
-    if not api_key:
-        st.warning("Please enter your Google API Key in the sidebar to proceed.")
-        st.stop() # Stops the app execution until the key is provided
-
-    # --- Configure Generative AI Model ---
-    try:
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-pro')
-    except Exception as e:
-        st.error(f"Failed to configure Google AI: {e}")
+        st.error(f"🚨 An error occurred while loading asset {file_path}: {e}")
         st.stop()
 
-    # --- Initialize Session State for Chat History ---
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-    if "document_text" not in st.session_state:
-        st.session_state.document_text = None
+@st.cache_resource
+def initialize_model(api_key: str, knowledge_base: str):
+    """Initialize Gemini model with caching for better performance."""
+    try:
+        if not api_key:
+            st.error("⚠️ GEMINI_API_KEY not found. Please set it in your Streamlit secrets.")
+            return None
+        
+        genai.configure(api_key=api_key)
+        
+        system_instruction = f"""You are a world-class Due Diligence Assistant for Wealth Management Cube Limited (WMC). Your task is to answer user questions based ONLY on the provided knowledge base.
 
-    # --- Process Uploaded File ---
-    if uploaded_file:
-        # Process the file only if it's new
-        if st.session_state.get("last_uploaded_filename") != uploaded_file.name:
-            with st.spinner(f"Processing '{uploaded_file.name}'..."):
-                document_text = parse_uploaded_file(uploaded_file)
-                st.session_state.document_text = document_text
-                st.session_state.last_uploaded_filename = uploaded_file.name
-                st.session_state.messages = [] # Reset chat on new file upload
-                st.toast(f"✅ Document '{uploaded_file.name}' is ready.")
-    
-    # --- Display Chat Interface ---
-    if not st.session_state.messages:
-        st.session_state.messages.append(
-            {"role": "assistant", "content": "Hello! Upload a document and ask me anything about its contents."}
+        【KNOWLEDGE BASE - START】
+        {knowledge_base}
+        【KNOWLEDGE BASE - END】
+
+        【CRITICAL RULES OF ENGAGEMENT】
+        1.  **Analyze Context:** Always consider the entire conversation history to understand the user's latest question. A follow-up question like "what about them?" refers to the previous topic.
+        2.  **Knowledge is Limited:** Your knowledge is strictly confined to the text within the KNOWLEDGE BASE. Do not use any external information or make assumptions.
+        3.  **Handle Vague Information Intelligently:** This is the most important rule. If the knowledge base provides a general answer (e.g., "reviewed periodically") and the user asks for a more specific detail (e.g., "is that once a year?"), you must:
+            a. First, state the information you DO have from the knowledge base (e.g., "The document states it is reviewed 'periodically'.").
+            b. Second, explicitly state that the specific detail the user is asking for is NOT available (e.g., "...however, it does not specify a more exact frequency like 'once a year'.").
+            c. DO NOT just say "I don't have that information." You must explain what you know and what you don't know.
+        4.  **Handle "Upon Request" Information:** If the knowledge base says something "will be provided upon request" (like an ownership chart), and the user asks for it, you must explain that the document states it needs to be requested and is not available within your current dataset.
+        5.  **Absolute Fallback:** If, and only if, you genuinely cannot find any relevant information for the user's question in the entire knowledge base after analyzing the context, then use the exact fallback phrase: "I don't have that specific information in our DDQ documents. Please contact our Compliance Officer, Peter Lau, at peterlau@wmcubehk.com or +852 3854 6419 for more details."
+        """
+        
+        model = genai.GenerativeModel(
+            model_name=config.MODEL_NAME,
+            generation_config=config.GENERATION_CONFIG,
+            safety_settings=config.SAFETY_SETTINGS,
+            system_instruction=system_instruction
         )
+        return model
+    except Exception as e:
+        st.error(f"❌ Failed to initialize model: {e}")
+        return None
 
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+@st.cache_data
+def parse_qa_from_kb(knowledge_base: str) -> dict:
+    """
+    Parses the knowledge base markdown file into a dictionary of
+    normalized questions and their answers.
+    """
+    qa_dict = {}
+    parts = knowledge_base.split("\n**Question:**")
+    for part in parts[1:]:
+        qa_split = part.split("\n**Answer:**")
+        if len(qa_split) == 2:
+            question = qa_split[0].strip()
+            answer = qa_split[1].strip()
+            normalized_question = re.sub(r'[?.,]$', '', question.lower().strip())
+            qa_dict[normalized_question] = answer
+    return qa_dict
 
-    # --- Handle User Input and Generate Response ---
-    if prompt := st.chat_input("Ask a question about the document..."):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
+# ============================================================================
+# MAIN APPLICATION LOGIC
+# ============================================================================
 
-        if st.session_state.document_text is None:
-            with st.chat_message("assistant"):
-                st.warning("Please upload a document first.")
-            st.stop()
+def main():
+    """Main function to run the Streamlit app."""
+    
+    # --- Load all necessary configurations and assets ---
+    try:
+        api_key = st.secrets["GEMINI_API_KEY"]
+    except (FileNotFoundError, KeyError):
+        st.error("🚨 GEMINI_API_KEY not found in st.secrets. Please add it to your .streamlit/secrets.toml file.")
+        st.stop()
 
-        with st.chat_message("assistant"):
-            with st.spinner("Thinking..."):
-                try:
-                    # Construct a detailed prompt for the model
-                    full_prompt = f"""
-                    Based on the content of the document provided below, answer the user's question.
-                    Analyze the text thoroughly to provide an accurate response.
+    css_styles = load_asset(config.ASSETS_DIR / "style.css")
+    knowledge_base = load_asset(config.ASSETS_DIR / "knowledge_base.md")
+    
+    # --- Initialize model and parse KB (these are cached) ---
+    model = initialize_model(api_key, knowledge_base)
+    qa_dict = parse_qa_from_kb(knowledge_base)
 
-                    --- DOCUMENT CONTENT ---
-                    {st.session_state.document_text}
-                    ---
+    if model is None:
+        st.stop()
 
-                    QUESTION:
-                    {prompt}
-                    """
-                    response = model.generate_content(full_prompt)
-                    assistant_response = response.text
-                    st.markdown(assistant_response)
-                except Exception as e:
-                    st.error(f"An error occurred: {e}")
-                    assistant_response = "Sorry, I encountered an error."
-
-        st.session_state.messages.append({"role": "assistant", "content": assistant_response})
-
+    # --- Session State Initialization ---
+    if 'authenticated' not in st.session_state:
+        st.session_state.authenticated = False
+    if 'username' not in st.session_state:
+        st.session_state.username = None
+    if 'messages' not in st.session_state:
+        st.session_state.messages = []
+    
+    # --- Page Routing ---
+    if not st.session_state.authenticated:
+        ui.login_page(css_styles, config.MODEL_NAME)
+    else:
+        ui.chat_page(
+            css_content=css_styles,
+            qa_dict=qa_dict,
+            model=model,
+            model_name=config.MODEL_NAME,
+            temp=config.GENERATION_CONFIG['temperature']
+        )
 
 if __name__ == "__main__":
     main()
