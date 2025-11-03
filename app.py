@@ -19,12 +19,12 @@ st.set_page_config(
 )
 
 # ============================================================================
-# DATA LOADING AND CACHING (Now in the main app file)
+# DATA LOADING AND CACHING
 # ============================================================================
 
 @st.cache_data
 def load_asset(file_path: Path) -> str:
-    """A cached function to load text-based assets."""
+    """A cached function to load text-based assets from a file path."""
     try:
         return file_path.read_text(encoding="utf-8")
     except FileNotFoundError:
@@ -72,19 +72,24 @@ def initialize_model(api_key: str, knowledge_base: str):
         st.error(f"❌ Failed to initialize model: {e}")
         return None
 
+### MODIFICATION ###: Renamed and generalized the parsing function.
 @st.cache_data
-def parse_qa_from_kb(knowledge_base: str) -> dict:
+def parse_qa_from_markdown(knowledge_base_content: str) -> dict:
     """
-    Parses the knowledge base markdown file into a dictionary of
-    normalized questions and their answers.
+    Parses a knowledge base string in Markdown format into a dictionary of
+    normalized questions and their answers. It handles multi-line answers.
     """
     qa_dict = {}
-    parts = knowledge_base.split("\n**Question:**")
+    # Split the content by the question marker. This ignores anything before the first question.
+    parts = knowledge_base_content.split("\n**Question:**")
     for part in parts[1:]:
-        qa_split = part.split("\n**Answer:**")
+        # Split each part into question and answer. The answer marker is the delimiter.
+        qa_split = part.split("\nAnswer:")
         if len(qa_split) == 2:
             question = qa_split[0].strip()
             answer = qa_split[1].strip()
+            
+            # Normalize the question to use as a dictionary key: lowercase and remove trailing punctuation.
             normalized_question = re.sub(r'[?.,]$', '', question.lower().strip())
             qa_dict[normalized_question] = answer
     return qa_dict
@@ -96,7 +101,6 @@ def parse_qa_from_kb(knowledge_base: str) -> dict:
 def main():
     """Main function to run the Streamlit app."""
     
-    # --- Load all necessary configurations and assets ---
     try:
         api_key = st.secrets["GEMINI_API_KEY"]
     except (FileNotFoundError, KeyError):
@@ -104,16 +108,7 @@ def main():
         st.stop()
 
     css_styles = load_asset(config.ASSETS_DIR / "style.css")
-    knowledge_base = load_asset(config.ASSETS_DIR / "knowledge_base.md")
     
-    # --- Initialize model and parse KB (these are cached) ---
-    model = initialize_model(api_key, knowledge_base)
-    qa_dict = parse_qa_from_kb(knowledge_base)
-
-    if model is None:
-        st.stop()
-
-    # --- Session State Initialization ---
     if 'authenticated' not in st.session_state:
         st.session_state.authenticated = False
     if 'username' not in st.session_state:
@@ -121,10 +116,50 @@ def main():
     if 'messages' not in st.session_state:
         st.session_state.messages = []
     
-    # --- Page Routing ---
     if not st.session_state.authenticated:
         ui.login_page(css_styles, config.MODEL_NAME)
     else:
+        ### MODIFICATION ###: Updated the sidebar to accept Markdown files.
+        st.sidebar.title("Knowledge Base Options")
+        uploaded_file = st.sidebar.file_uploader(
+            "Upload Knowledge Base File",
+            type=["md", "txt"],
+            help="Upload a Markdown (.md) or Text (.txt) file with the Q&A knowledge base."
+        )
+
+        knowledge_base_string = ""
+        qa_dict = {}
+
+        ### MODIFICATION ###: Updated the logic to handle uploaded text/markdown files.
+        if uploaded_file is not None:
+            # If a file is uploaded, use it as the knowledge base
+            st.sidebar.success("✅ Knowledge base loaded successfully from file!")
+            
+            # Read the content of the uploaded file as a string
+            knowledge_base_string = uploaded_file.getvalue().decode("utf-8")
+            
+            # Parse the string content to create the Q&A dictionary
+            qa_dict = parse_qa_from_markdown(knowledge_base_string)
+            
+            if not qa_dict:
+                st.warning("⚠️ The uploaded file could not be parsed or is empty. Falling back to the default knowledge base.")
+                # Fallback to default if parsing fails
+                knowledge_base_string = load_asset(config.ASSETS_DIR / "knowledge_base.md")
+                qa_dict = parse_qa_from_markdown(knowledge_base_string)
+        else:
+            # Otherwise, use the default markdown file
+            st.sidebar.info("ℹ️ Using the default knowledge base. Upload a file to switch.")
+            knowledge_base_string = load_asset(config.ASSETS_DIR / "knowledge_base.md")
+            qa_dict = parse_qa_from_markdown(knowledge_base_string)
+        
+        # Initialize the model. This will only re-run if `knowledge_base_string` changes.
+        model = initialize_model(api_key, knowledge_base_string)
+
+        if model is None:
+            st.error("Could not initialize the AI model. The application cannot proceed.")
+            st.stop()
+
+        # Render the chat page with the loaded data
         ui.chat_page(
             css_content=css_styles,
             qa_dict=qa_dict,
