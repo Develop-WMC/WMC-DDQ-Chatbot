@@ -45,22 +45,32 @@ def _ensure_session_defaults():
     st.session_state.setdefault("username", None)
     st.session_state.setdefault("messages", [])
 
-# --- Sidebar (MODIFIED) ---
+# --- Sidebar (MODIFIED with RESET button) ---
 
 def _render_sidebar(model_name: str, temp: float):
     """
-    Renders the sidebar. It now includes the file uploader and returns the uploaded file object.
+    Renders the sidebar. It now includes the file uploader, a reset button,
+    and returns the uploaded file object.
     """
     with st.sidebar:
         st.markdown("### 📥 Upload Your Own Document")
         st.info("Extend my knowledge by uploading a PDF, DOCX, or XLSX file. I will use it to answer your questions.")
         
-        # ADDED: File uploader widget
+        # File uploader widget
         uploaded_file = st.file_uploader(
             "Upload Document",
             type=["pdf", "docx", "xlsx"],
-            label_visibility="collapsed"
+            label_visibility="collapsed",
+            key="file_uploader"  # Key to control the widget's state
         )
+        
+        # --- NEW: Add the Reset Button and its Logic ---
+        if uploaded_file is not None:  # Only show the button if a file has been uploaded
+            if st.button("↩️ Reset to Default Knowledge Base", use_container_width=True):
+                # This is the core logic for the reset
+                st.session_state["file_uploader"] = None  # Clear the file uploader's state
+                st.session_state["messages"] = []        # Clear the chat history
+                st.rerun()  # Rerun the app to reflect the changes immediately
         
         st.markdown("---")
         
@@ -108,10 +118,9 @@ def _render_sidebar(model_name: str, temp: float):
                 except FileNotFoundError:
                     st.warning("No logs available yet.")
     
-    # ADDED: Return the uploaded file object
     return uploaded_file
 
-# --- Pages (No changes needed here, but note how the sidebar function is called) ---
+# --- Pages (No changes needed here) ---
 
 def login_page(css_content: str | None = None, model_name: str = "Model"):
     _ensure_session_defaults()
@@ -151,13 +160,10 @@ def chat_page(
     model=None,
     model_name: str = "Model",
     temp: float = 0.2,
-    uploaded_file=None # MODIFIED: Receive uploaded_file object
+    uploaded_file=None
 ):
     _ensure_session_defaults()
     load_css(css_content)
-    
-    # The sidebar is now rendered in app.py to get the file object early.
-    # We just display the chat interface here.
     
     col1, col2 = st.columns([4, 1])
     with col1:
@@ -177,7 +183,6 @@ def chat_page(
     username_safe = _safe_html(st.session_state.get("username") or "")
     st.markdown(f"""<div class="success-box">🟢 Logged in as: <strong>{username_safe}</strong></div>""", unsafe_allow_html=True)
 
-    # ADDED: Display a message indicating which knowledge base is being used.
     if uploaded_file:
         st.success(f"✅ Now answering questions based on the uploaded file: **{uploaded_file.name}**")
     else:
